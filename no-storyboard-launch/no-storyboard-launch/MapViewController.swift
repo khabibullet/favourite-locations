@@ -118,6 +118,9 @@ extension MapViewController {
 	}
 	
 	func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+		if annotation.isEqual(mapView.userLocation) {
+			return nil
+		}
 		let annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "something")
 		switch annotation.title {
 		case "42 Paris":
@@ -129,7 +132,7 @@ extension MapViewController {
 		case "21 Novosibirsk":
 			annotationView.markerTintColor = .purple
 		default:
-			annotationView.markerTintColor = .green
+			break
 		}
 		return annotationView
 	}
