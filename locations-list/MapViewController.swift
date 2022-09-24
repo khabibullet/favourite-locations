@@ -16,7 +16,7 @@ protocol NavigationDelegate {
 class MapViewController: UIViewController, NavigationDelegate, MKMapViewDelegate {
 
 	let mapView = MKMapView()
-	var locationManager = CLLocationManager()
+	var locationManager: CLLocationManager!
 	let trackingButton = UIButton(type: UIButton.ButtonType.system) as UIButton
 	let mapAppearanceSwitch = UISegmentedControl(items: ["Standard", "Satellite", "Hybrid"])
 	var userPointAnnotation = MKPointAnnotation()
@@ -27,19 +27,13 @@ class MapViewController: UIViewController, NavigationDelegate, MKMapViewDelegate
 		configureSegmentedBar(mapAppearanceSwitch)
 		configureTrackingButton(trackingButton)
 		addPointAnnotationPins()
-		mapView.showsUserLocation = true
-		mapView.delegate = self
-		view.addSubview(mapView)
-	}
-	
-	override func viewDidLayoutSubviews() {
-		super.viewDidLayoutSubviews()
-		mapView.frame = view.bounds
-		view.backgroundColor = .white
-		
+		locationManager = CLLocationManager()
 		locationManager.delegate = self
 		locationManager.requestAlwaysAuthorization()
 		locationManager.startUpdatingLocation()
+		mapView.showsUserLocation = true
+		mapView.delegate = self
+		view = mapView;
 	}
 	
 	override init(nibName: String?, bundle: Bundle?) {
@@ -53,13 +47,20 @@ class MapViewController: UIViewController, NavigationDelegate, MKMapViewDelegate
 	}
 }
 
-extension MapViewController: CLLocationManagerDelegate{
-
+extension MapViewController: CLLocationManagerDelegate {
+	
 	func centerLocation(_ location: CLLocation, regionRadius: CLLocationDistance = 1000) {
 		let coordinateRegion = MKCoordinateRegion(center: location.coordinate,
 			latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
 		
 		mapView.setRegion(coordinateRegion, animated: true)
+	}
+
+	@objc func centerMapOnUserButtonClicked () {
+		if let location = locationManager.location?.coordinate {
+			let region = MKCoordinateRegion.init(center: location, latitudinalMeters: 400, longitudinalMeters: 400)
+			mapView.setRegion(region, animated: true)
+		}
 	}
 }
 
@@ -77,19 +78,10 @@ extension MapViewController {
 			button.leadingAnchor.constraint(equalTo: mapAppearanceSwitch.trailingAnchor, constant: 20)
 		])
 	}
-	
-	@objc func centerMapOnUserButtonClicked () {
-		let userLocation = locationManager.location
-		let latitude = userLocation?.coordinate.latitude
-		let longitude = userLocation?.coordinate.longitude
-		
-		userPointAnnotation.coordinate = CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!)
-		centerLocation(userLocation!, regionRadius: 1000)
-	}
-	
+
 	func configureSegmentedBar (_ segmentedBar: UISegmentedControl) {
 		mapView.addSubview(segmentedBar)
-		
+
 		segmentedBar.backgroundColor = .systemGray2
 		segmentedBar.translatesAutoresizingMaskIntoConstraints = false
 		NSLayoutConstraint.activate([

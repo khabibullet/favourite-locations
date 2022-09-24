@@ -18,7 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		4118125428AE8321008ED400 /* no-storyboard-launch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "no-storyboard-launch.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4118125428AE8321008ED400 /* locations-list.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "locations-list.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4118125728AE8321008ED400 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4118125928AE8321008ED400 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		4118126028AE8323008ED400 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -44,7 +44,7 @@
 		4118124B28AE8321008ED400 = {
 			isa = PBXGroup;
 			children = (
-				4118125628AE8321008ED400 /* no-storyboard-launch */,
+				4118125628AE8321008ED400 /* locations-list */,
 				4118125528AE8321008ED400 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -52,12 +52,12 @@
 		4118125528AE8321008ED400 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4118125428AE8321008ED400 /* no-storyboard-launch.app */,
+				4118125428AE8321008ED400 /* locations-list.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		4118125628AE8321008ED400 /* no-storyboard-launch */ = {
+		4118125628AE8321008ED400 /* locations-list */ = {
 			isa = PBXGroup;
 			children = (
 				4118125728AE8321008ED400 /* AppDelegate.swift */,
@@ -70,15 +70,15 @@
 				4118126228AE8323008ED400 /* LaunchScreen.storyboard */,
 				4118126528AE8323008ED400 /* Info.plist */,
 			);
-			path = "no-storyboard-launch";
+			path = "locations-list";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		4118125328AE8321008ED400 /* no-storyboard-launch */ = {
+		4118125328AE8321008ED400 /* locations-list */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4118126828AE8323008ED400 /* Build configuration list for PBXNativeTarget "no-storyboard-launch" */;
+			buildConfigurationList = 4118126828AE8323008ED400 /* Build configuration list for PBXNativeTarget "locations-list" */;
 			buildPhases = (
 				4118125028AE8321008ED400 /* Sources */,
 				4118125128AE8321008ED400 /* Frameworks */,
@@ -88,9 +88,9 @@
 			);
 			dependencies = (
 			);
-			name = "no-storyboard-launch";
+			name = "locations-list";
 			productName = "no-storyboard-launch";
-			productReference = 4118125428AE8321008ED400 /* no-storyboard-launch.app */;
+			productReference = 4118125428AE8321008ED400 /* locations-list.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -108,7 +108,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 4118124F28AE8321008ED400 /* Build configuration list for PBXProject "no-storyboard-launch" */;
+			buildConfigurationList = 4118124F28AE8321008ED400 /* Build configuration list for PBXProject "locations-list" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -121,7 +121,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				4118125328AE8321008ED400 /* no-storyboard-launch */,
+				4118125328AE8321008ED400 /* locations-list */,
 			);
 		};
 /* End PBXProject section */
@@ -287,15 +287,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "no-storyboard-launch/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "no-storyboard-launch";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Let this app track your location to discover all features";
-				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Let this app track your location to discover all features";
-				INFOPLIST_KEY_NSLocationUsageDescription = "Let this app track your location to discover all features";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Let this app track your location to discover all features";
+				INFOPLIST_FILE = "locations-list/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "locations-list";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Please, allow location usage";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Please, allow location usage";
+				INFOPLIST_KEY_NSLocationUsageDescription = "Please, allow location usage";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Please, allow location usage";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -305,8 +306,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "school-21.no-storyboard-launch";
+				PRODUCT_BUNDLE_IDENTIFIER = "locations-list";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -318,15 +320,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "no-storyboard-launch/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "no-storyboard-launch";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Let this app track your location to discover all features";
-				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Let this app track your location to discover all features";
-				INFOPLIST_KEY_NSLocationUsageDescription = "Let this app track your location to discover all features";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Let this app track your location to discover all features";
+				INFOPLIST_FILE = "locations-list/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "locations-list";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Please, allow location usage";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Please, allow location usage";
+				INFOPLIST_KEY_NSLocationUsageDescription = "Please, allow location usage";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Please, allow location usage";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -336,8 +339,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "school-21.no-storyboard-launch";
+				PRODUCT_BUNDLE_IDENTIFIER = "locations-list";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -347,7 +351,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4118124F28AE8321008ED400 /* Build configuration list for PBXProject "no-storyboard-launch" */ = {
+		4118124F28AE8321008ED400 /* Build configuration list for PBXProject "locations-list" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4118126628AE8323008ED400 /* Debug */,
@@ -356,7 +360,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4118126828AE8323008ED400 /* Build configuration list for PBXNativeTarget "no-storyboard-launch" */ = {
+		4118126828AE8323008ED400 /* Build configuration list for PBXNativeTarget "locations-list" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4118126928AE8323008ED400 /* Debug */,

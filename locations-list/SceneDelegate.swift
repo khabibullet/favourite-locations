@@ -24,7 +24,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		let tabBarVC = CustomTabBarController()
 		tabBarVC.setViewControllers([placesVC, mapVC], animated: false)
 		tabBarVC.navigationDelegate = mapVC
-//		tabBarVC.defaultLocation = placesVC.places[0]
 		
 		window.rootViewController = tabBarVC
 		window.makeKeyAndVisible()
