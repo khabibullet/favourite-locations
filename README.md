@@ -1,4 +1,4 @@
-## **Locations list**
+## **Favourite locations**
 
 This project represents two ViewControllers linked via TabBarController. There is a MapView in the second ViewController and TableView in the first one.
 
