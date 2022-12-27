@@ -1,0 +1,19 @@
+warning_threshold: 15
+
+disabled_rules:
+- trailing_whitespace
+- identifier_name
+
+line_length:
+- 150 # warning
+
+function_parameter_count:
+- 10 # warning
+- 15 # error
+
+file_length:
+- 500 # warning
+
+type_body_length:
+- 400 # warning
+- 450 # error

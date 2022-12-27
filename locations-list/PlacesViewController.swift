@@ -18,7 +18,7 @@ class PlacesViewController: UIViewController, UITableViewDelegate, UITableViewDa
 	
 	let placesTableView = UITableView()
 	
-	var navigationDelegate: NavigationDelegate?
+	weak var navigationDelegate: NavigationDelegate?
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,7 +37,7 @@ class PlacesViewController: UIViewController, UITableViewDelegate, UITableViewDa
 	override init(nibName: String?, bundle: Bundle?) {
 		super.init(nibName: nibName, bundle: bundle)
 		
-		tabBarItem = UITabBarItem(title: nil, image: UIImage(systemName: "list.star"), tag: 0)
+        tabBarItem = UITabBarItem(title: nil, image: UIImage(named: "list-dash"), tag: 0)
 	}
 	
 	required init?(coder: NSCoder) {

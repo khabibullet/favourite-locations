@@ -9,7 +9,7 @@ import UIKit
 import MapKit
 import CoreLocation
 
-protocol NavigationDelegate {
+protocol NavigationDelegate: AnyObject {
 	func centerLocation(_ location: CLLocation, regionRadius: CLLocationDistance)
 }
 
@@ -33,13 +33,13 @@ class MapViewController: UIViewController, NavigationDelegate, MKMapViewDelegate
 		locationManager.startUpdatingLocation()
 		mapView.showsUserLocation = true
 		mapView.delegate = self
-		view = mapView;
+		view = mapView
 	}
 	
 	override init(nibName: String?, bundle: Bundle?) {
 		super.init(nibName: nibName, bundle: bundle)
 		
-		tabBarItem = UITabBarItem(title: nil, image: UIImage(systemName: "mappin.and.ellipse"), tag: 1)
+        tabBarItem = UITabBarItem(title: nil, image: UIImage(named: "pin-symbol"), tag: 1)
 	}
 	
 	required init?(coder: NSCoder) {
@@ -69,7 +69,7 @@ extension MapViewController {
 	func configureTrackingButton(_ button: UIButton) {
 		mapView.addSubview(button)
 		
-		button.setImage(UIImage(systemName: "location.fill"), for: .normal)
+		button.setImage(UIImage(named: "location-fill"), for: .normal)
 		button.addTarget(self, action: #selector(centerMapOnUserButtonClicked), for: .touchUpInside)
 		
 		button.translatesAutoresizingMaskIntoConstraints = false
@@ -82,7 +82,7 @@ extension MapViewController {
 	func configureSegmentedBar (_ segmentedBar: UISegmentedControl) {
 		mapView.addSubview(segmentedBar)
 
-		segmentedBar.backgroundColor = .systemGray2
+        segmentedBar.backgroundColor = UIColor(named: "mid-cyan")
 		segmentedBar.translatesAutoresizingMaskIntoConstraints = false
 		NSLayoutConstraint.activate([
 			segmentedBar.centerXAnchor.constraint(equalTo: mapView.centerXAnchor),

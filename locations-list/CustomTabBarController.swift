@@ -10,7 +10,7 @@ import UIKit
 class CustomTabBarController: UITabBarController, UITabBarControllerDelegate {
 
 	var defaultLocation = Pin("42 Paris", "42 School Paris", 48.896564659174146, 2.3184473544617554).location
-	var navigationDelegate: NavigationDelegate?
+	weak var navigationDelegate: NavigationDelegate?
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +29,7 @@ class CustomTabBarController: UITabBarController, UITabBarControllerDelegate {
 extension CustomTabBarController {
 	
 	func configure() {
-		tabBar.backgroundColor = .systemGray5
+		tabBar.backgroundColor = UIColor(named: "mid-cyan")
 		view.backgroundColor = .white
 	}
 }
