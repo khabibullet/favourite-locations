@@ -9,12 +9,13 @@ import UIKit
 import MapKit
 import CoreLocation
 
-protocol NavigationDelegate: AnyObject {
+protocol MapViewProtocol: AnyObject {
 	func centerLocation(_ location: CLLocation, regionRadius: CLLocationDistance)
 }
 
-class MapViewController: UIViewController, NavigationDelegate, MKMapViewDelegate {
+class MapViewController: UIViewController, MapViewProtocol, MKMapViewDelegate {
 
+    weak var presenter: MapPresenterProtocol!
 	let mapView = MKMapView()
 	var locationManager: CLLocationManager!
 	let trackingButton = UIButton(type: UIButton.ButtonType.system) as UIButton

@@ -3,6 +3,7 @@ warning_threshold: 15
 disabled_rules:
 - trailing_whitespace
 - identifier_name
+- vertical_whitespace
 
 line_length:
 - 150 # warning
@@ -17,3 +18,6 @@ file_length:
 type_body_length:
 - 400 # warning
 - 450 # error
+
+excluded:
+- Pods
