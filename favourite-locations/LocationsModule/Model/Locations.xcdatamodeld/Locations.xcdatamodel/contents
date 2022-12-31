@@ -2,24 +2,11 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="20G1020" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Location" representedClassName=".Location" syncable="YES">
         <attribute name="comment" optional="YES" attributeType="String"/>
-        <attribute name="latitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="longitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="name" attributeType="String" maxValueString="25"/>
-        <relationship name="node" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TrieNode" inverseName="location" inverseEntity="TrieNode"/>
-    </entity>
-    <entity name="LocationsTrie" representedClassName=".LocationsTrie" syncable="YES">
-        <attribute name="count" attributeType="Integer 64" minValueString="0" maxValueString="0" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="root" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="TrieNode"/>
-    </entity>
-    <entity name="TrieNode" representedClassName=".TrieNode" syncable="YES">
-        <attribute name="char" optional="YES" attributeType="String"/>
-        <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="TrieNode" inverseName="parent" inverseEntity="TrieNode"/>
-        <relationship name="location" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Location" inverseName="node" inverseEntity="Location"/>
-        <relationship name="parent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TrieNode" inverseName="children" inverseEntity="TrieNode"/>
+        <attribute name="latitude" attributeType="Double" minValueString="-90" maxValueString="90" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="longitude" attributeType="Double" minValueString="-180" maxValueString="180" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="name" attributeType="String" maxValueString="30"/>
     </entity>
     <elements>
-        <element name="Location" positionX="-106.5936279296875" positionY="11.83224487304688" width="128" height="104"/>
-        <element name="LocationsTrie" positionX="68.41748046875" positionY="-174.9761657714844" width="128" height="59"/>
-        <element name="TrieNode" positionX="175.322265625" positionY="-9.091339111328125" width="128" height="89"/>
+        <element name="Location" positionX="-106.5936279296875" positionY="11.83224487304688" width="128" height="89"/>
     </elements>
 </model>

@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 
-class Location {
+class Location: NSManagedObject {
     
 }
 
