@@ -14,7 +14,8 @@ protocol Builder {
 class ModuleBuilder: Builder {
     static func buildLocationsModule() -> LocationsPresenterProtocol {
         
-        let persistenceManager = PersistenceManager()
+        let dataModelName = "LocationsDataModel"
+        let persistenceManager = PersistenceManager(dataModelName: dataModelName)
         let view = LocationsViewController()
         let model: [Location] = []
         let presenter = LocationsPresenter(view: view, model: model, persistenceManager: persistenceManager)

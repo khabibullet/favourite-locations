@@ -10,22 +10,40 @@ import Foundation
 protocol LocationsPresenterProtocol: AnyObject {
     var coordinator: CoordinatorProtocol! { get set }
     var view: LocationsViewProtocol! { get }
-    func saveManagedObjectContext()
+    func getLocationWithPrefixOnIndex(id: Int) -> Location
+    func getNumberOfLocationsWithPrefix() -> Int
 }
 
 class LocationsPresenter: LocationsPresenterProtocol {
     var view: LocationsViewProtocol!
-    let locations: [Location]
+    var locations: [Location]
     let persistenceManager: PersistenceStoreManaged
     weak var coordinator: CoordinatorProtocol!
+    var searchKey = ""
     
     init(view: LocationsViewProtocol, model: [Location], persistenceManager: PersistenceStoreManaged) {
         self.view = view
         self.locations = model
         self.persistenceManager = persistenceManager
+        fetchLocations()
     }
     
-    func saveManagedObjectContext() {
-        
+    func fetchLocations() {
+        persistenceManager.fetchModelEntities(entityName: Location.entityName) { [weak self] (entities) in
+            self?.locations = entities
+        }
+    }
+    
+    var locationsWithPrefix: [Location] {
+        return (locations as [Location]).filter { $0.name.hasPrefix(searchKey) }
+    }
+    
+    func getLocationWithPrefixOnIndex(id: Int) -> Location {
+        return locationsWithPrefix[id]
+    }
+    
+    func getNumberOfLocationsWithPrefix() -> Int {
+        return locationsWithPrefix.count
     }
 }
+

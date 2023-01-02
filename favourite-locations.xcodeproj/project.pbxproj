@@ -10,6 +10,7 @@
 		3F043B41295DD07E0036AC6A /* PersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F043B40295DD07E0036AC6A /* PersistenceManager.swift */; };
 		3F2DDBBA295B8433007B803F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3F2DDBB9295B8433007B803F /* LaunchScreen.storyboard */; };
 		3F4F3050295C64AB0020EDD2 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3F4F304F295C64AB0020EDD2 /* Media.xcassets */; };
+		3F68CDFA29634A6A00FB0F0B /* LocationTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F68CDF929634A6A00FB0F0B /* LocationTableCell.swift */; };
 		3F96441B295F730400E04D65 /* LocationsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F96441A295F730400E04D65 /* LocationsCoordinator.swift */; };
 		3F96441F295F782600E04D65 /* AddLocationRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F96441E295F782600E04D65 /* AddLocationRouter.swift */; };
 		3F964421295F79CA00E04D65 /* MapPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F964420295F79CA00E04D65 /* MapPresenter.swift */; };
@@ -21,7 +22,6 @@
 		4118125828AE8321008ED400 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4118125728AE8321008ED400 /* AppDelegate.swift */; };
 		4118126C28AE8748008ED400 /* LocationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4118126B28AE8748008ED400 /* LocationsViewController.swift */; };
 		4118126E28AE8874008ED400 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4118126D28AE8874008ED400 /* MapViewController.swift */; };
-		4118127028AE8C9D008ED400 /* CustomTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4118126F28AE8C9D008ED400 /* CustomTabBarController.swift */; };
 		4118127228AE9383008ED400 /* MapPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4118127128AE9383008ED400 /* MapPin.swift */; };
 		C57050FBDA26A2914048E219 /* Pods_favourite_locations.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80BDDEF367D9420B16709C07 /* Pods_favourite_locations.framework */; };
 /* End PBXBuildFile section */
@@ -32,6 +32,7 @@
 		3F043B40295DD07E0036AC6A /* PersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceManager.swift; sourceTree = "<group>"; };
 		3F2DDBB9295B8433007B803F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3F4F304F295C64AB0020EDD2 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		3F68CDF929634A6A00FB0F0B /* LocationTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTableCell.swift; sourceTree = "<group>"; };
 		3F96441A295F730400E04D65 /* LocationsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationsCoordinator.swift; sourceTree = "<group>"; };
 		3F96441E295F782600E04D65 /* AddLocationRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLocationRouter.swift; sourceTree = "<group>"; };
 		3F964420295F79CA00E04D65 /* MapPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPresenter.swift; sourceTree = "<group>"; };
@@ -45,7 +46,6 @@
 		4118126528AE8323008ED400 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4118126B28AE8748008ED400 /* LocationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationsViewController.swift; sourceTree = "<group>"; };
 		4118126D28AE8874008ED400 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
-		4118126F28AE8C9D008ED400 /* CustomTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBarController.swift; sourceTree = "<group>"; };
 		4118127128AE9383008ED400 /* MapPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPin.swift; sourceTree = "<group>"; };
 		80BDDEF367D9420B16709C07 /* Pods_favourite_locations.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_favourite_locations.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -94,6 +94,7 @@
 			children = (
 				4118126B28AE8748008ED400 /* LocationsViewController.swift */,
 				3FBE9DBA295DFFFB0055AECA /* LocationAddViewController.swift */,
+				3F68CDF929634A6A00FB0F0B /* LocationTableCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -202,7 +203,6 @@
 				3FE030B8295F341500EDC03C /* LocationsModule */,
 				3FE030BE295F351300EDC03C /* MapModule */,
 				3F2DDBAF295B57FE007B803F /* Core */,
-				4118126F28AE8C9D008ED400 /* CustomTabBarController.swift */,
 				3F2DDBB0295B596E007B803F /* Resources */,
 			);
 			path = "favourite-locations";
@@ -361,6 +361,7 @@
 				4118126C28AE8748008ED400 /* LocationsViewController.swift in Sources */,
 				3F043B41295DD07E0036AC6A /* PersistenceManager.swift in Sources */,
 				4118127228AE9383008ED400 /* MapPin.swift in Sources */,
+				3F68CDFA29634A6A00FB0F0B /* LocationTableCell.swift in Sources */,
 				3F96441B295F730400E04D65 /* LocationsCoordinator.swift in Sources */,
 				3FBE9DBB295DFFFB0055AECA /* LocationAddViewController.swift in Sources */,
 				4118125828AE8321008ED400 /* AppDelegate.swift in Sources */,
@@ -370,7 +371,6 @@
 				3F964421295F79CA00E04D65 /* MapPresenter.swift in Sources */,
 				3FE030C0295F37D200EDC03C /* LocationsPresenter.swift in Sources */,
 				3FE737F42960D1EA008C890A /* LocationsDataModel.xcdatamodeld in Sources */,
-				4118127028AE8C9D008ED400 /* CustomTabBarController.swift in Sources */,
 				4118126E28AE8874008ED400 /* MapViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
