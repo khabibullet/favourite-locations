@@ -2,20 +2,21 @@
 //  Location+CoreDataProperties.swift
 //  
 //
-//  Created by Ирек Хабибуллин on 31.12.2022.
+//  Created by Ирек Хабибуллин on 03.01.2023.
 //
 //
 
 import Foundation
 import CoreData
 
-class Location: NSManagedObject {
+public class Location: NSManagedObject {
     static let entityName = "Location"
 }
 
 extension Location {
-    @NSManaged public var name: String
     @NSManaged public var comment: String?
-    @NSManaged public var longitude: Double
     @NSManaged public var latitude: Double
+    @NSManaged public var longitude: Double
+    @NSManaged public var name: String
+
 }

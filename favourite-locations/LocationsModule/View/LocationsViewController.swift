@@ -18,6 +18,7 @@ class LocationsViewController: UIViewController, UITableViewDelegate, UITableVie
     weak var presenter: LocationsPresenterProtocol!
     
 	let locationsTable = UITableView()
+    let searchController = UISearchController()
     
     let spinner: UIActivityIndicatorView = {
         let spinner = UIActivityIndicatorView()
@@ -26,47 +27,78 @@ class LocationsViewController: UIViewController, UITableViewDelegate, UITableVie
         return spinner
     }()
     
-    let addButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Add Location", for: .normal)
-        button.layer.cornerRadius = 10
-        button.backgroundColor = UIColor(named: "mint-dark")
-        button.contentEdgeInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
-        button.addTarget(self, action: #selector(didTap), for: .touchUpInside)
-        return button
+    let titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Locations"
+        label.textColor = UIColor(named: "mint-dark")
+        label.sizeToFit()
+        label.font = UIFont.boldSystemFont(ofSize: 16.0)
+        return label
     }()
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         view.backgroundColor = .white
 		view.addSubview(locationsTable)
-        view.addSubview(addButton)
         
-        locationsTable.register(UITableViewCell.self, forCellReuseIdentifier: LocationTableCell.id)
-        locationsTable.delegate = self
-        locationsTable.dataSource = self
-        
-        tabBarItem = UITabBarItem(title: nil, image: UIImage(named: "list"), tag: 0)
-        tabBarItem.imageInsets = UIEdgeInsets.init(top: 5, left: 0, bottom: -5, right: 0)
+        registerTable()
+        configureSearchBar()
+        configureNavigationBar()
+        configureTabBar()
+        configureTabBar()
     }
 	
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
         
-        locationsTable.frame = view.bounds
-        
-        addButton.snp.makeConstraints { (maker) in
-            maker.bottom.equalToSuperview().offset(-60)
-            maker.centerX.equalToSuperview()
-            maker.width.equalToSuperview().dividedBy(4)
-            maker.height.equalToSuperview().dividedBy(10)
-        }
+        locationsTable.frame = view.safeAreaLayoutGuide.layoutFrame
 	}
     
-    @objc func didTap() {
-        let inputVC = LocationAddViewController()
-        inputVC.delegate = self
-        self.present(inputVC, animated: true, completion: nil)
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
+    func registerTable() {
+        locationsTable.register(UITableViewCell.self, forCellReuseIdentifier: LocationTableCell.id)
+        locationsTable.delegate = self
+        locationsTable.dataSource = self
+    }
+    
+    func configureSearchBar() {
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search"
+        searchController.definesPresentationContext = true
+        searchController.hidesNavigationBarDuringPresentation = false
+        searchController.searchBar.textField?.backgroundColor = .white
+    }
+    
+    func configureNavigationBar() {
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+        let image = UIImage(named: "add")
+        let item = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(didTapAddButton))
+        navigationItem.rightBarButtonItem = item
+        navigationItem.titleView = titleLabel
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.backgroundColor = UIColor(named: "mint-light")
+    }
+    
+    func configureTabBar() {
+        tabBarItem = UITabBarItem(title: nil, image: UIImage(named: "list"), tag: 0)
+        tabBarItem.imageInsets = UIEdgeInsets.init(top: 5, left: 0, bottom: -5, right: 0)
+        tabBarController?.tabBar.backgroundColor = UIColor(named: "mint-light")
+        tabBarController?.tabBar.unselectedItemTintColor = UIColor(named: "mint-light-2")
+    }
+    
+    @objc func didTapAddButton() {
+//        let inputVC = LocationAddViewController()
+//        inputVC.delegate = self
+//        self.present(inputVC, animated: true, completion: nil)
+        print("add button tapped")
     }
     
     func updateTableContents() {
@@ -103,4 +135,10 @@ class LocationsViewController: UIViewController, UITableViewDelegate, UITableVie
 //		navigationDelegate?.centerLocation(places[0].location, regionRadius: 1000)
 //		tabBarController?.selectedIndex = 1
 //	}
+}
+
+extension LocationsViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        
+    }
 }

@@ -9,6 +9,7 @@ import UIKit
 
 protocol CoordinatorProtocol: AnyObject {
     var tabBarController: UITabBarController! { get }
+    func savePersistenceContext()
 }
 
 class LocationsCoordinator: NSObject, CoordinatorProtocol {
@@ -21,6 +22,10 @@ class LocationsCoordinator: NSObject, CoordinatorProtocol {
         self.mapPresenter = mapPresenter
         self.tabBarController = tabBarController
         super.init()
+    }
+    
+    func savePersistenceContext() {
+        locationsPresenter.savePersistenceContext()
     }
 }
 

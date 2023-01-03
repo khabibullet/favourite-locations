@@ -55,10 +55,10 @@ class LocationAddViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc func didTapSaveButton() {
-        if let text = charTextField.text {
-            delegate?.didAddString(string: text)
-        }
-        self.dismiss(animated: true, completion: nil)
+//        if let text = charTextField.text {
+//            delegate?.didAddString(string: text)
+//        }
+//        self.dismiss(animated: true, completion: nil)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

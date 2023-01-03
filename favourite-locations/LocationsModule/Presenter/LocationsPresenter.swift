@@ -12,11 +12,12 @@ protocol LocationsPresenterProtocol: AnyObject {
     var view: LocationsViewProtocol! { get }
     func getLocationWithPrefixOnIndex(id: Int) -> Location
     func getNumberOfLocationsWithPrefix() -> Int
+    func savePersistenceContext()
 }
 
 class LocationsPresenter: LocationsPresenterProtocol {
     var view: LocationsViewProtocol!
-    var locations: [Location]
+    var locations: [Location]!
     let persistenceManager: PersistenceStoreManaged
     weak var coordinator: CoordinatorProtocol!
     var searchKey = ""
@@ -29,13 +30,32 @@ class LocationsPresenter: LocationsPresenterProtocol {
     }
     
     func fetchLocations() {
-        persistenceManager.fetchModelEntities(entityName: Location.entityName) { [weak self] (entities) in
-            self?.locations = entities
+        persistenceManager.fetchModelEntities(entityName: Location.entityName, ofType: Location.self) { (entities) in
+            self.locations.append(contentsOf: entities)
+            
+            // Test data
+            self.putTestLocations()
+        }
+    }
+    
+    func putTestLocations() {
+        if locations.count == 0 {
+            let location1: Location = {
+                let location = Location(context: self.persistenceManager.viewContext)
+                location.name = "Kazan"
+                location.longitude = -45.01
+                location.latitude = -33.45
+                location.comment = "The capital of Tatarstan"
+                return location
+            }()
+            self.locations.append(contentsOf: [
+                location1
+            ])
         }
     }
     
     var locationsWithPrefix: [Location] {
-        return (locations as [Location]).filter { $0.name.hasPrefix(searchKey) }
+        return locations.filter { $0.name.hasPrefix(searchKey) }
     }
     
     func getLocationWithPrefixOnIndex(id: Int) -> Location {
@@ -45,5 +65,8 @@ class LocationsPresenter: LocationsPresenterProtocol {
     func getNumberOfLocationsWithPrefix() -> Int {
         return locationsWithPrefix.count
     }
+    
+    func savePersistenceContext() {
+        persistenceManager.saveContext()
+    }
 }
-

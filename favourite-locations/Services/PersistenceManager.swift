@@ -13,7 +13,7 @@ import CoreData
 protocol PersistenceStoreManaged {
     var persistentContainer: NSPersistentContainer { get }
     var viewContext: NSManagedObjectContext { get }
-    func fetchModelEntities<T: NSFetchRequestResult>(entityName: String, sendToPresenter: @escaping ([T]) -> ())
+    func fetchModelEntities<T: NSFetchRequestResult>(entityName: String, ofType: T.Type, sendToPresenter: @escaping ([T]) -> Void)
     func saveContext()
 }
 
@@ -37,7 +37,7 @@ class PersistenceManager: PersistenceStoreManaged {
 
     lazy var viewContext = persistentContainer.viewContext
     
-    func fetchModelEntities<T: NSFetchRequestResult>(entityName: String, sendToPresenter: @escaping ([T]) -> ()) {
+    func fetchModelEntities<T: NSFetchRequestResult>(entityName: String, ofType: T.Type, sendToPresenter: @escaping ([T]) -> Void) {
         let request = NSFetchRequest<T>(entityName: entityName)
         request.sortDescriptors = [NSSortDescriptor.init(key: "name", ascending: true)]
         do {

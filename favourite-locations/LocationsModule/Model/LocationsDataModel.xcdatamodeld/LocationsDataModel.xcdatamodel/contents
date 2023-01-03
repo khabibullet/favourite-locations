@@ -4,7 +4,7 @@
         <attribute name="comment" optional="YES" attributeType="String"/>
         <attribute name="latitude" attributeType="Double" minValueString="-90" maxValueString="90" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="longitude" attributeType="Double" minValueString="-180" maxValueString="180" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="name" attributeType="String" minValueString="1" maxValueString="30" defaultValueString=""/>
+        <attribute name="name" attributeType="String" minValueString="1" maxValueString="30"/>
     </entity>
     <elements>
         <element name="Location" positionX="-63" positionY="-18" width="128" height="89"/>

@@ -40,7 +40,7 @@ class MapViewController: UIViewController, MapViewProtocol, MKMapViewDelegate {
 	override init(nibName: String?, bundle: Bundle?) {
 		super.init(nibName: nibName, bundle: bundle)
 		
-        tabBarItem = UITabBarItem(title: nil, image: UIImage(named: "pin"), tag: 1)
+        tabBarItem = UITabBarItem(title: nil, image: UIImage(named: "map"), tag: 1)
         tabBarItem.imageInsets = UIEdgeInsets.init(top: 5, left: 0, bottom: -5, right: 0)
 	}
 	
@@ -109,7 +109,7 @@ extension MapViewController {
 	}
 	
 	func addPointAnnotationPins () {
-		places.forEach({ mapView.addAnnotation($0.annotation) })
+//		places.forEach({ mapView.addAnnotation($0.annotation) })
 	}
 	
 	func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {

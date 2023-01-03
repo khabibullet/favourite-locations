@@ -11,16 +11,16 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    var coordinator: LocationsCoordinator?
+    var coordinator: CoordinatorProtocol?
     
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         let locationsModule = ModuleBuilder.buildLocationsModule()
         let mapModule = ModuleBuilder.buildMapModule()
-        let coordinator = ModuleBuilder.buildCoordinator(locationsPresenter: locationsModule, mapPresenter: mapModule)
+        self.coordinator = ModuleBuilder.buildCoordinator(locationsPresenter: locationsModule, mapPresenter: mapModule)
         
         let window = UIWindow(frame: UIScreen.main.bounds)
-        window.rootViewController = coordinator.tabBarController
+        window.rootViewController = coordinator?.tabBarController
         window.makeKeyAndVisible()
         self.window = window
         
@@ -28,6 +28,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	}
     
     func applicationDidEnterBackground(_ application: UIApplication) {
-        coordinator?.locationsPresenter.saveContext()
+        coordinator?.savePersistenceContext()
     }
 }
