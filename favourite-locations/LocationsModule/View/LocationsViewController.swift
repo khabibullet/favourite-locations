@@ -13,7 +13,7 @@ protocol LocationsViewProtocol {
     
 }
 
-class LocationsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, LocationsViewProtocol {
+class LocationsViewController: UIViewController, LocationsViewProtocol {
 	
     weak var presenter: LocationsPresenterProtocol!
     
@@ -36,8 +36,6 @@ class LocationsViewController: UIViewController, UITableViewDelegate, UITableVie
         return label
     }()
     
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -57,14 +55,11 @@ class LocationsViewController: UIViewController, UITableViewDelegate, UITableVie
         locationsTable.frame = view.safeAreaLayoutGuide.layoutFrame
 	}
     
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
-    
     func registerTable() {
-        locationsTable.register(UITableViewCell.self, forCellReuseIdentifier: LocationTableCell.id)
+        locationsTable.register(LocationTableCell.self, forCellReuseIdentifier: LocationTableCell.id)
         locationsTable.delegate = self
         locationsTable.dataSource = self
+        locationsTable.separatorStyle = .none
     }
     
     func configureSearchBar() {
@@ -104,41 +99,50 @@ class LocationsViewController: UIViewController, UITableViewDelegate, UITableVie
     func updateTableContents() {
         locationsTable.reloadData()
     }
-    
-	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return presenter.getNumberOfLocationsWithPrefix()
-	}
-	
-	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = locationsTable.dequeueReusableCell(withIdentifier: LocationTableCell.id, for: indexPath) as? LocationTableCell else {
-            return LocationTableCell()
-        }
-		
-        let location = presenter.getLocationWithPrefixOnIndex(id: indexPath.row)
-        cell.title.text = location.name
-        let northOrSouth = location.latitude > 0 ? "N" : "S"
-        let eastOrWest = location.longitude > 0 ? "N" : "S"
-        cell.coordinates.text = String(format: "%.2f°%s %.2f°%s", abs(location.latitude), northOrSouth, abs(location.longitude), eastOrWest)
-        if let comment = location.comment {
-            cell.comment.text = comment
-        }
-		return cell
-	}
-	
-//	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//		tableView.deselectRow(at: indexPath, animated: false)
-//		navigationDelegate?.centerLocation(places[indexPath.row].location, regionRadius: 1000)
-//		tabBarController?.selectedIndex = 1
-//	}
-//
-//	func setDefaultLocation() {
-//		navigationDelegate?.centerLocation(places[0].location, regionRadius: 1000)
-//		tabBarController?.selectedIndex = 1
-//	}
 }
 
 extension LocationsViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         
     }
+}
+
+extension LocationsViewController: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return presenter.getNumberOfLocationsWithPrefix()
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = locationsTable.dequeueReusableCell(withIdentifier: LocationTableCell.id, for: indexPath) as? LocationTableCell else {
+            return LocationTableCell()
+        }
+        
+        let location = presenter.getLocationWithPrefixOnIndex(id: indexPath.row)
+        cell.title.text = location.name
+        let northOrSouth = location.latitude > 0 ? "N" : "S"
+        let eastOrWest = location.longitude > 0 ? "E" : "W"
+        cell.coordinates.text = String(format: "%.2f°%@, %.2f°%@", abs(location.latitude), northOrSouth, abs(location.longitude), eastOrWest)
+        if let comment = location.comment {
+            cell.comment.text = comment
+        }
+        cell.selectionStyle = .none
+        cell.layoutIfNeeded()
+        return cell
+    }
+}
+
+extension LocationsViewController: UITableViewDelegate {
+    
+    
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        tableView.deselectRow(at: indexPath, animated: false)
+//        navigationDelegate?.centerLocation(places[indexPath.row].location, regionRadius: 1000)
+//        tabBarController?.selectedIndex = 1
+//    }
+//
+//    func setDefaultLocation() {
+//        navigationDelegate?.centerLocation(places[0].location, regionRadius: 1000)
+//        tabBarController?.selectedIndex = 1
+//    }
 }

@@ -35,7 +35,7 @@ class ModuleBuilder: Builder {
     static func buildCoordinator(locationsPresenter: LocationsPresenterProtocol, mapPresenter: MapPresenterProtocol) -> CoordinatorProtocol {
         let tabBarController = UITabBarController()
         if let locationsView = locationsPresenter.view as? UIViewController {
-            let navigationController = NavigationController(rootViewController: locationsView)
+            let navigationController = UINavigationController(rootViewController: locationsView)
             tabBarController.addChild(navigationController)
         }
         if let mapView = mapPresenter.view as? UIViewController {
