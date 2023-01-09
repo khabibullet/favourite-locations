@@ -16,24 +16,21 @@ class LocationTableCell: UITableViewCell {
     let title: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 24)
-        label.sizeToFit()
-        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     let coordinates: UILabel = {
         let label = UILabel()
-        label.sizeToFit()
-        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 16)
+        label.textColor = .lightGray
         return label
     }()
     
     let comment: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 12, weight: .light)
+        label.font = UIFont.systemFont(ofSize: 16)
         label.lineBreakMode = .byWordWrapping
-        label.numberOfLines = 1
-//        label.sizeToFit()
+        label.numberOfLines = 0
         return label
     }()
     
@@ -41,24 +38,23 @@ class LocationTableCell: UITableViewCell {
         let view = UIView()
         view.backgroundColor = UIColor(named: "mint-extra-light")
         view.layer.cornerRadius = 10
-        view.clipsToBounds = true
-        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
     let editButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .clear
-        button.titleLabel?.text = "Edit"
-        button.titleLabel?.textColor = .green
+        button.setTitle("Edit", for: .normal)
+        button.setTitleColor(.green, for: .normal)
+//        button.sizeToFit()
         return button
     }()
     
     let deleteButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .clear
-        button.titleLabel?.text = "Delete"
-        button.titleLabel?.textColor = .red
+        button.setTitle("Delete", for: .normal)
+        button.setTitleColor(.red, for: .normal)
         return button
     }()
     
@@ -100,7 +96,6 @@ class LocationTableCell: UITableViewCell {
         
         coordinates.snp.makeConstraints {
             $0.top.equalTo(title.snp.bottom).offset(10).priority(999)
-            $0.bottom.equalToSuperview().inset(10)
             $0.right.equalToSuperview().inset(10)
             $0.left.equalToSuperview().inset(10)
         }
@@ -114,7 +109,19 @@ class LocationTableCell: UITableViewCell {
             $0.top.equalTo(coordinates.snp.bottom).offset(10).priority(999)
             $0.right.equalToSuperview().inset(10)
             $0.left.equalToSuperview().inset(10)
+        }
+        
+        editButton.snp.makeConstraints {
+            $0.top.equalTo(comment.snp.bottom).offset(10).priority(999)
+            $0.left.equalToSuperview().inset(10)
             $0.bottom.equalToSuperview().inset(10)
+        }
+        
+        deleteButton.snp.makeConstraints {
+            $0.top.equalTo(comment.snp.bottom).offset(10).priority(999)
+            $0.left.equalTo(editButton.snp.right).offset(10)
+            $0.bottom.equalToSuperview().inset(10)
+            $0.right.lessThanOrEqualToSuperview().inset(10)
         }
     }
     

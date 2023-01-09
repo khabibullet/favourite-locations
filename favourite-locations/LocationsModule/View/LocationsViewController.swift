@@ -17,8 +17,22 @@ class LocationsViewController: UIViewController, LocationsViewProtocol {
 	
     weak var presenter: LocationsPresenterProtocol!
     
-	let locationsTable = UITableView()
-    let searchController = UISearchController()
+    let locationsTable: UITableView = {
+        let table = UITableView()
+        table.register(LocationTableCell.self, forCellReuseIdentifier: LocationTableCell.id)
+        table.separatorStyle = .none
+        return table
+    }()
+    
+    let searchController: UISearchController = {
+        let search = UISearchController()
+        search.obscuresBackgroundDuringPresentation = false
+        search.searchBar.placeholder = "Search"
+        search.definesPresentationContext = true
+        search.hidesNavigationBarDuringPresentation = false
+        search.searchBar.textField?.backgroundColor = .white
+        return search
+    }()
     
     let spinner: UIActivityIndicatorView = {
         let spinner = UIActivityIndicatorView()
@@ -42,8 +56,11 @@ class LocationsViewController: UIViewController, LocationsViewProtocol {
         view.backgroundColor = .white
 		view.addSubview(locationsTable)
         
-        registerTable()
-        configureSearchBar()
+        locationsTable.delegate = self
+        locationsTable.dataSource = self
+        
+        searchController.searchResultsUpdater = self
+
         configureNavigationBar()
         configureTabBar()
         configureTabBar()
@@ -51,25 +68,8 @@ class LocationsViewController: UIViewController, LocationsViewProtocol {
 	
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
-        
         locationsTable.frame = view.safeAreaLayoutGuide.layoutFrame
 	}
-    
-    func registerTable() {
-        locationsTable.register(LocationTableCell.self, forCellReuseIdentifier: LocationTableCell.id)
-        locationsTable.delegate = self
-        locationsTable.dataSource = self
-        locationsTable.separatorStyle = .none
-    }
-    
-    func configureSearchBar() {
-        searchController.searchResultsUpdater = self
-        searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Search"
-        searchController.definesPresentationContext = true
-        searchController.hidesNavigationBarDuringPresentation = false
-        searchController.searchBar.textField?.backgroundColor = .white
-    }
     
     func configureNavigationBar() {
         navigationItem.searchController = searchController
@@ -78,8 +78,15 @@ class LocationsViewController: UIViewController, LocationsViewProtocol {
         let item = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(didTapAddButton))
         navigationItem.rightBarButtonItem = item
         navigationItem.titleView = titleLabel
-        navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.backgroundColor = UIColor(named: "mint-light")
+        navigationController?.navigationBar.layer.shadowColor = UIColor(named: "mint-light")?.cgColor
+        if #available(iOS 13.0, *) {
+            let appearance = UINavigationBarAppearance()
+            appearance.backgroundColor = UIColor(named: "mint-light")
+            appearance.shadowColor = .clear
+            navigationController?.navigationBar.scrollEdgeAppearance = appearance
+            navigationController?.navigationBar.standardAppearance = appearance
+        }
     }
     
     func configureTabBar() {
@@ -130,10 +137,17 @@ extension LocationsViewController: UITableViewDataSource {
         cell.layoutIfNeeded()
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
 }
 
 extension LocationsViewController: UITableViewDelegate {
     
+//    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+//        <#code#>
+//    }
     
 //    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 //        tableView.deselectRow(at: indexPath, animated: false)
