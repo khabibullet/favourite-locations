@@ -45,7 +45,7 @@ class LocationsPresenter: LocationsPresenterProtocol {
                 location.name = "Kazan"
                 location.longitude = -45.01
                 location.latitude = -33.45
-                location.comment = "The capital of Tatarstan. One of the most antient cities in Russia."
+                location.comment = "The capital of Tatarstan. One of the most antient cities in Russia. There is one more sentence just to show total height."
                 return location
             }()
             self.locations.append(contentsOf: [

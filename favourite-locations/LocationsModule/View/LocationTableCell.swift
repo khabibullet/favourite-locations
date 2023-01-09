@@ -15,7 +15,7 @@ class LocationTableCell: UITableViewCell {
     
     let title: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 24)
+        label.font = UIFont.systemFont(ofSize: 22)
         return label
     }()
     
@@ -34,48 +34,41 @@ class LocationTableCell: UITableViewCell {
         return label
     }()
     
-    let container: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(named: "mint-extra-light")
-        view.layer.cornerRadius = 10
-        return view
-    }()
-    
-    let editButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = .clear
-        button.setTitle("Edit", for: .normal)
-        button.setTitleColor(.green, for: .normal)
-//        button.sizeToFit()
-        return button
-    }()
-    
-    let deleteButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = .clear
-        button.setTitle("Delete", for: .normal)
-        button.setTitleColor(.red, for: .normal)
-        return button
-    }()
-    
     let arrowButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "arrow-down"), for: .normal)
         button.addTarget(self, action: #selector(didTapArrow), for: .touchUpInside)
-        button.sizeToFit()
         return button
+    }()
+    
+    let hStack: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.distribution = .fill
+        return stack
+    }()
+    
+    let vStack: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.distribution = .fill
+        stack.spacing = 10
+        stack.layer.cornerRadius = 10
+        stack.backgroundColor = UIColor(named: "mint-extra-light")
+        stack.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        stack.isLayoutMarginsRelativeArrangement = true
+        return stack
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-        container.addSubview(title)
-        container.addSubview(coordinates)
-        container.addSubview(arrowButton)
-        container.addSubview(comment)
-        container.addSubview(editButton)
-        container.addSubview(deleteButton)
-        contentView.addSubview(container)
+        
+        hStack.addArrangedSubview(title)
+        hStack.addArrangedSubview(arrowButton)
+        vStack.addArrangedSubview(hStack)
+        vStack.addArrangedSubview(coordinates)
+        vStack.addArrangedSubview(comment)
+        contentView.addSubview(vStack)
     }
     
     required init?(coder: NSCoder) {
@@ -83,63 +76,27 @@ class LocationTableCell: UITableViewCell {
     }
     
     override func layoutSubviews() {
-        
-        container.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(10)
-        }
-        
-        title.snp.makeConstraints {
+        super.layoutSubviews()
+        vStack.snp.makeConstraints {
             $0.top.equalToSuperview().inset(10)
-            $0.right.equalToSuperview().inset(10)
+            $0.bottom.equalToSuperview().inset(10).priority(999)
             $0.left.equalToSuperview().inset(10)
-        }
-        
-        coordinates.snp.makeConstraints {
-            $0.top.equalTo(title.snp.bottom).offset(10).priority(999)
             $0.right.equalToSuperview().inset(10)
-            $0.left.equalToSuperview().inset(10)
-        }
-        
-        arrowButton.snp.makeConstraints {
-            $0.centerY.equalTo(title.snp.centerY)
-            $0.right.equalToSuperview().inset(10)
-        }
-        
-        comment.snp.makeConstraints {
-            $0.top.equalTo(coordinates.snp.bottom).offset(10).priority(999)
-            $0.right.equalToSuperview().inset(10)
-            $0.left.equalToSuperview().inset(10)
-        }
-        
-        editButton.snp.makeConstraints {
-            $0.top.equalTo(comment.snp.bottom).offset(10).priority(999)
-            $0.left.equalToSuperview().inset(10)
-            $0.bottom.equalToSuperview().inset(10)
-        }
-        
-        deleteButton.snp.makeConstraints {
-            $0.top.equalTo(comment.snp.bottom).offset(10).priority(999)
-            $0.left.equalTo(editButton.snp.right).offset(10)
-            $0.bottom.equalToSuperview().inset(10)
-            $0.right.lessThanOrEqualToSuperview().inset(10)
         }
     }
-    
-    
-    
     
     @objc func didTapArrow() {
         if cellIsExpanded == false {
             arrowButton.setImage(UIImage(named: "arrow-up"), for: .normal)
-            
+
             cellIsExpanded = true
-            
+
 //            title.snp.makeConstraints {
 //                $0.edges.equalToSuperview().inset(10)
 //            }
         } else {
             arrowButton.setImage(UIImage(named: "arrow-down"), for: .normal)
-            
+
             cellIsExpanded = false
         }
         layoutIfNeeded()

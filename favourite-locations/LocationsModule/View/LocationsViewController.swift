@@ -21,6 +21,7 @@ class LocationsViewController: UIViewController, LocationsViewProtocol {
         let table = UITableView()
         table.register(LocationTableCell.self, forCellReuseIdentifier: LocationTableCell.id)
         table.separatorStyle = .none
+        table.estimatedRowHeight = UITableView.automaticDimension
         return table
     }()
     
@@ -138,16 +139,44 @@ extension LocationsViewController: UITableViewDataSource {
         return cell
     }
     
-    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
+//    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+//        return true
+//    }
 }
 
 extension LocationsViewController: UITableViewDelegate {
     
-//    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-//        <#code#>
-//    }
+    func edit(rowIndexPathAt indexPath: IndexPath) -> UIContextualAction {
+        let action = UIContextualAction(style: .normal, title: nil) { (_, _, _) in
+            print("editing row")
+        }
+        action.backgroundColor = .white
+        action.image = UIImage(named: "edit")
+        return action
+    }
+    
+    func delete(rowIndexPathAt indexPath: IndexPath) -> UIContextualAction {
+        let action = UIContextualAction(style: .destructive, title: nil) { (_, _, _) in
+            print("deleting row")
+        }
+        action.backgroundColor = .white
+        action.image = UIImage(named: "delete")
+        return action
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = delete(rowIndexPathAt: indexPath)
+        let swipe = UISwipeActionsConfiguration(actions: [deleteAction])
+        swipe.performsFirstActionWithFullSwipe = false
+        return swipe
+    }
+    
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let editAction = edit(rowIndexPathAt: indexPath)
+        let swipe = UISwipeActionsConfiguration(actions: [editAction])
+        swipe.performsFirstActionWithFullSwipe = false
+        return swipe
+    }
     
 //    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 //        tableView.deselectRow(at: indexPath, animated: false)
