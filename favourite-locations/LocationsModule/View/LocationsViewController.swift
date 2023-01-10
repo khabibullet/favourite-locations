@@ -10,10 +10,9 @@ import CoreData
 import SnapKit
 
 protocol LocationsViewProtocol {
-    
 }
 
-class LocationsViewController: UIViewController, LocationsViewProtocol {
+class LocationsViewController: UIViewController {
 	
     weak var presenter: LocationsPresenterProtocol!
     
@@ -98,10 +97,8 @@ class LocationsViewController: UIViewController, LocationsViewProtocol {
     }
     
     @objc func didTapAddButton() {
-//        let inputVC = LocationAddViewController()
-//        inputVC.delegate = self
-//        self.present(inputVC, animated: true, completion: nil)
-        print("add button tapped")
+        let modalView = LocationAddViewController(presenter: presenter)
+        present(modalView, animated: true)
     }
     
     func updateTableContents() {
@@ -139,9 +136,9 @@ extension LocationsViewController: UITableViewDataSource {
         return cell
     }
     
-//    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-//        return true
-//    }
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
 }
 
 extension LocationsViewController: UITableViewDelegate {
@@ -177,15 +174,8 @@ extension LocationsViewController: UITableViewDelegate {
         swipe.performsFirstActionWithFullSwipe = false
         return swipe
     }
+}
+
+extension LocationsViewController: LocationsViewProtocol {
     
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        tableView.deselectRow(at: indexPath, animated: false)
-//        navigationDelegate?.centerLocation(places[indexPath.row].location, regionRadius: 1000)
-//        tabBarController?.selectedIndex = 1
-//    }
-//
-//    func setDefaultLocation() {
-//        navigationDelegate?.centerLocation(places[0].location, regionRadius: 1000)
-//        tabBarController?.selectedIndex = 1
-//    }
 }

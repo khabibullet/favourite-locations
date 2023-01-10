@@ -38,21 +38,6 @@ class LocationsPresenter: LocationsPresenterProtocol {
         }
     }
     
-    func putTestLocations() {
-        if locations.count == 0 {
-            let location1: Location = {
-                let location = Location(context: self.persistenceManager.viewContext)
-                location.name = "Kazan"
-                location.longitude = -45.01
-                location.latitude = -33.45
-                location.comment = "The capital of Tatarstan. One of the most antient cities in Russia. There is one more sentence just to show total height."
-                return location
-            }()
-            self.locations.append(contentsOf: [
-                location1
-            ])
-        }
-    }
     
     var locationsWithPrefix: [Location] {
         return locations.filter { $0.name.hasPrefix(searchKey) }
@@ -68,5 +53,35 @@ class LocationsPresenter: LocationsPresenterProtocol {
     
     func savePersistenceContext() {
         persistenceManager.saveContext()
+    }
+    
+    func addNewLocation() {
+        
+    }
+}
+
+
+
+
+
+
+
+
+
+extension LocationsPresenter {
+    func putTestLocations() {
+        if locations.count == 0 {
+            let location1: Location = {
+                let location = Location(context: self.persistenceManager.viewContext)
+                location.name = "Kazan"
+                location.longitude = -45.01
+                location.latitude = -33.45
+                location.comment = "The capital of Tatarstan. One of the most antient cities in Russia. There is one more sentence just to show total height."
+                return location
+            }()
+            self.locations.append(contentsOf: [
+                location1
+            ])
+        }
     }
 }
