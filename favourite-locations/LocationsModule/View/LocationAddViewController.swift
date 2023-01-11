@@ -16,6 +16,18 @@ class LocationAddViewController: UIViewController, Presentable {
     
     let presenter: LocationsPresenterProtocol
     
+    let scrollView: UIScrollView = {
+        let view = UIScrollView()
+        view.backgroundColor = .white
+        view.isScrollEnabled = true
+        view.bounces = true
+        view.alwaysBounceVertical = true
+        view.showsHorizontalScrollIndicator = false
+        view.showsVerticalScrollIndicator = false
+        view.scrollsToTop = false
+        return view
+    }()
+    
     let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Add new location"
@@ -24,46 +36,51 @@ class LocationAddViewController: UIViewController, Presentable {
         return label
     }()
     
-    let nameTextField: UITextField = {
-        let field = UITextField()
-        field.backgroundColor = UIColor(named: "mint-light")
-        field.layer.cornerRadius = 10
-        field.placeholder = "Name"
-        field.textAlignment = .natural
-        return field
+    let nameTextView: CustomTextView = {
+        let view = CustomTextView()
+        view.placeholder = "Name"
+        view.backgroundColor = UIColor(named: "mint-light")
+        view.layer.cornerRadius = 10
+        view.textAlignment = .natural
+        view.isScrollEnabled = false
+        view.font = .systemFont(ofSize: 16)
+        view.textContainer.maximumNumberOfLines = 1
+        return view
     }()
     
-    let coordinatesTextField: UITextField = {
-        let field = UITextField()
-        field.backgroundColor = UIColor(named: "mint-light")
-        field.placeholder = "Coordinates"
-        field.isUserInteractionEnabled = false
-        field.layer.cornerRadius = 10
-        field.textAlignment = .natural
-        return field
+    let coordinatesTextView: CustomTextView = {
+        let view = CustomTextView()
+        view.placeholder = "Coordinates"
+        view.backgroundColor = UIColor(named: "mint-light")
+        view.isUserInteractionEnabled = false
+        view.isScrollEnabled = false
+        view.layer.cornerRadius = 10
+        view.textAlignment = .natural
+        view.font = .systemFont(ofSize: 15)
+        return view
     }()
     
-    let commentTextField: UITextField = {
-        let field = UITextField()
-        field.backgroundColor = UIColor(named: "mint-light")
-        field.placeholder = "Description"
-        field.layer.cornerRadius = 10
-        field.textAlignment = .natural
-        return field
+    let commentTextView: CustomTextView = {
+        let view = CustomTextView()
+        view.placeholder = "Description"
+        view.backgroundColor = UIColor(named: "mint-light")
+        view.layer.cornerRadius = 10
+        view.textAlignment = .natural
+        view.isScrollEnabled = false
+        view.font = .systemFont(ofSize: 15)
+        view.textContainer.maximumNumberOfLines = 100
+        return view
     }()
     
     let locateButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Locate", for: .normal)
-        button.setTitleColor(UIColor(named: "mint-dark"), for: .normal)
         button.setImage(UIImage(named: "location-contour"), for: .normal)
-        button.imageEdgeInsets = UIEdgeInsets(top: 3, left: 3, bottom: 3, right: 3)
-        button.semanticContentAttribute = .forceRightToLeft
-        button.backgroundColor = .white
+        button.backgroundColor = UIColor(named: "mint-light")
         button.layer.cornerRadius = 10
-        button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor(named: "mint-dark")?.cgColor
         button.addTarget(self, action: #selector(didTapLocateButton), for: .touchUpInside)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.imageEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 2, right: 5)
+        button.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return button
     }()
     
@@ -126,17 +143,26 @@ class LocationAddViewController: UIViewController, Presentable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
-        topHStack.addArrangedSubview(coordinatesTextField)
+        nameTextView.delegate = self
+        coordinatesTextView.delegate = self
+        commentTextView.delegate = self
+        scrollView.delegate = self
+        
+        topHStack.addArrangedSubview(coordinatesTextView)
         topHStack.addArrangedSubview(locateButton)
         bottomHStack.addArrangedSubview(cancelButton)
         bottomHStack.addArrangedSubview(saveButton)
-        vStack.addArrangedSubview(nameTextField)
+        vStack.addArrangedSubview(nameTextView)
         vStack.addArrangedSubview(topHStack)
-        vStack.addArrangedSubview(commentTextField)
+        vStack.addArrangedSubview(commentTextView)
         vStack.addArrangedSubview(bottomHStack)
-        view.addSubview(vStack)
-        view.addSubview(titleLabel)
+        scrollView.addSubview(vStack)
+        scrollView.addSubview(titleLabel)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
+        scrollView.addGestureRecognizer(tap)
+        
+        view.addSubview(scrollView)
     }
     
     override func viewDidLayoutSubviews() {
@@ -150,13 +176,18 @@ class LocationAddViewController: UIViewController, Presentable {
             $0.centerX.equalToSuperview()
             $0.width.equalToSuperview().dividedBy(1.5)
         }
+        
+        scrollView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     @objc func didTapSaveButton() {
-//        if let text = charTextField.text {
-//            delegate?.didAddString(string: text)
-//        }
-//        self.dismiss(animated: true, completion: nil)
+        
     }
     
     @objc func didTapCancelButton() {
@@ -168,10 +199,42 @@ class LocationAddViewController: UIViewController, Presentable {
     }
 }
 
-extension LocationAddViewController: UITextFieldDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        nameTextField.resignFirstResponder()
-        commentTextField.resignFirstResponder()
+extension LocationAddViewController: UITextViewDelegate {
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        
+        if textView.text.count + (text.count - range.length) > 30 {
+            guard textView !== nameTextView else { return false }
+        }
         return true
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        guard let textView = textView as? CustomTextView else { return }
+    }
+
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        guard let textView = textView as? CustomTextView else { return }
+        if textView.isPlaceholderPresented {
+            textView.text = ""
+            textView.textColor = .black
+            textView.isPlaceholderPresented = false
+        }
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        guard let textView = textView as? CustomTextView else { return }
+        if textView.text.count == 0 {
+            textView.isPlaceholderPresented = true
+            textView.text = textView.placeholder
+            textView.textColor = textView.placeholderColor
+        }
+    }
+}
+
+extension LocationAddViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        scrollView.contentOffset.x = 0
     }
 }

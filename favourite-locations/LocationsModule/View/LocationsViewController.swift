@@ -98,6 +98,9 @@ class LocationsViewController: UIViewController {
     
     @objc func didTapAddButton() {
         let modalView = LocationAddViewController(presenter: presenter)
+        if #available(iOS 13.0, *) {
+            modalView.isModalInPresentation = true
+        }
         present(modalView, animated: true)
     }
     
