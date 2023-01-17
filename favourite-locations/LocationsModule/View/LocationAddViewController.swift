@@ -28,6 +28,10 @@ class LocationAddViewController: UIViewController, Presentable {
         return view
     }()
     
+    let contentView: UIView = {
+        return UIView()
+    }()
+    
     let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Add new location"
@@ -42,9 +46,9 @@ class LocationAddViewController: UIViewController, Presentable {
         view.backgroundColor = UIColor(named: "mint-light")
         view.layer.cornerRadius = 10
         view.textAlignment = .natural
-        view.isScrollEnabled = false
-        view.font = .systemFont(ofSize: 16)
+        view.font = .systemFont(ofSize: 18)
         view.textContainer.maximumNumberOfLines = 1
+        view.isScrollEnabled = false
         return view
     }()
     
@@ -56,7 +60,7 @@ class LocationAddViewController: UIViewController, Presentable {
         view.isScrollEnabled = false
         view.layer.cornerRadius = 10
         view.textAlignment = .natural
-        view.font = .systemFont(ofSize: 15)
+        view.font = .systemFont(ofSize: 18)
         return view
     }()
     
@@ -67,7 +71,7 @@ class LocationAddViewController: UIViewController, Presentable {
         view.layer.cornerRadius = 10
         view.textAlignment = .natural
         view.isScrollEnabled = false
-        view.font = .systemFont(ofSize: 15)
+        view.font = .systemFont(ofSize: 18)
         view.textContainer.maximumNumberOfLines = 100
         return view
     }()
@@ -93,6 +97,7 @@ class LocationAddViewController: UIViewController, Presentable {
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor(named: "mint-dark")?.cgColor
         button.addTarget(self, action: #selector(didTapCancelButton), for: .touchUpInside)
+        button.titleLabel?.font = .systemFont(ofSize: 18)
         return button
     }()
     
@@ -103,30 +108,34 @@ class LocationAddViewController: UIViewController, Presentable {
         button.backgroundColor = UIColor(named: "mint-dark")
         button.layer.cornerRadius = 10
         button.addTarget(self, action: #selector(didTapSaveButton), for: .touchUpInside)
+        button.titleLabel?.font = .systemFont(ofSize: 18)
         return button
     }()
     
     let topHStack: UIStackView = {
         let stack = UIStackView()
-        stack.axis = .horizontal
-        stack.distribution = .fill
-        stack.spacing = 10
         stack.backgroundColor = UIColor(named: "mint-light")
         stack.layer.cornerRadius = 10
+        stack.axis = .horizontal
+        stack.spacing = 10
+        stack.alignment = .fill
+        stack.distribution = .fill
         return stack
     }()
     
     let bottomHStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
-        stack.distribution = .fillEqually
         stack.spacing = 10
+        stack.alignment = .fill
+        stack.distribution = .fillEqually
         return stack
     }()
     
     let vStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
+        stack.alignment = .fill
         stack.distribution = .fill
         stack.spacing = 15
         return stack
@@ -152,33 +161,37 @@ class LocationAddViewController: UIViewController, Presentable {
         topHStack.addArrangedSubview(locateButton)
         bottomHStack.addArrangedSubview(cancelButton)
         bottomHStack.addArrangedSubview(saveButton)
+        vStack.addArrangedSubview(titleLabel)
         vStack.addArrangedSubview(nameTextView)
         vStack.addArrangedSubview(topHStack)
         vStack.addArrangedSubview(commentTextView)
         vStack.addArrangedSubview(bottomHStack)
-        scrollView.addSubview(vStack)
-        scrollView.addSubview(titleLabel)
+        contentView.addSubview(vStack)
+        scrollView.addSubview(contentView)
+        view.addSubview(scrollView)
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         scrollView.addGestureRecognizer(tap)
         
-        view.addSubview(scrollView)
+        setConstraints()
     }
     
-    override func viewDidLayoutSubviews() {
-        titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(30)
-            $0.centerX.equalToSuperview()
+    func setConstraints() {
+        vStack.setCustomSpacing(35, after: titleLabel)
+        
+        scrollView.snp.makeConstraints {
+            $0.edges.equalTo(view.safeAreaLayoutGuide.snp.edges)
+        }
+        
+        contentView.snp.makeConstraints {
+            $0.edges.equalTo(scrollView.contentLayoutGuide.snp.edges)
+            $0.width.equalTo(view.snp.width)
         }
         
         vStack.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(30)
-            $0.centerX.equalToSuperview()
+            $0.verticalEdges.equalToSuperview().inset(40)
             $0.width.equalToSuperview().dividedBy(1.5)
-        }
-        
-        scrollView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.centerX.equalToSuperview()
         }
     }
     
@@ -210,7 +223,13 @@ extension LocationAddViewController: UITextViewDelegate {
     }
     
     func textViewDidChange(_ textView: UITextView) {
-        guard let textView = textView as? CustomTextView else { return }
+//        guard let textView = textView as? CustomTextView else { return }
+//        let endPosition = textView.endOfDocument
+    }
+    
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        
+        return true
     }
 
     

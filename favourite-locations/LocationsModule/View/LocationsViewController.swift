@@ -12,6 +12,10 @@ import SnapKit
 protocol LocationsViewProtocol {
 }
 
+protocol LocationTableCellDelegate: AnyObject {
+    func locationCellArrowButtonTapped(cell: LocationTableCell)
+}
+
 class LocationsViewController: UIViewController {
 	
     weak var presenter: LocationsPresenterProtocol!
@@ -125,17 +129,8 @@ extension LocationsViewController: UITableViewDataSource {
         guard let cell = locationsTable.dequeueReusableCell(withIdentifier: LocationTableCell.id, for: indexPath) as? LocationTableCell else {
             return LocationTableCell()
         }
-        
-        let location = presenter.getLocationWithPrefixOnIndex(id: indexPath.row)
-        cell.title.text = location.name
-        let northOrSouth = location.latitude > 0 ? "N" : "S"
-        let eastOrWest = location.longitude > 0 ? "E" : "W"
-        cell.coordinates.text = String(format: "%.2f°%@, %.2f°%@", abs(location.latitude), northOrSouth, abs(location.longitude), eastOrWest)
-        if let comment = location.comment {
-            cell.comment.text = comment
-        }
-        cell.selectionStyle = .none
-        cell.layoutIfNeeded()
+        cell.location = presenter.getLocationWithPrefixOnIndex(id: indexPath.row)
+        cell.delegate = self
         return cell
     }
     
@@ -181,4 +176,13 @@ extension LocationsViewController: UITableViewDelegate {
 
 extension LocationsViewController: LocationsViewProtocol {
     
+}
+
+extension LocationsViewController: LocationTableCellDelegate {
+    func locationCellArrowButtonTapped(cell: LocationTableCell) {
+        guard let indexPath = locationsTable.indexPath(for: cell) else { return }
+        locationsTable.beginUpdates()
+        cell.showOrHideDetails()
+        locationsTable.endUpdates()
+    }
 }

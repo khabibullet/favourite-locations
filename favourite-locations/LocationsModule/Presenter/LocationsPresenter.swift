@@ -76,7 +76,9 @@ extension LocationsPresenter {
                 location.name = "Kazan"
                 location.longitude = -45.01
                 location.latitude = -33.45
-                location.comment = "The capital of Tatarstan. One of the most antient cities in Russia. There is one more sentence just to show total height."
+                // swiftlint:disable line_length
+                location.comment = "The capital of Tatarstan. One of the most antient cities in Russia. There is one more sentence just to enlarge cell height."
+                // swiftlint:enable line_length
                 return location
             }()
             self.locations.append(contentsOf: [
