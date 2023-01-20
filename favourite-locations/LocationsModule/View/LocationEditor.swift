@@ -8,13 +8,33 @@
 import UIKit
 import SnapKit
 
+enum ValidationResult {
+    case success
+    case error
+}
+
+enum EditMode {
+    case edit
+    case create
+}
+
 protocol Presentable {
     
 }
 
-class LocationAddViewController: UIViewController, Presentable {
+class LocationEditor: UIViewController, Presentable {
     
     let presenter: LocationsPresenterProtocol
+    
+    let editMode: EditMode
+    var oldName: String?
+    
+    var coordinates: (latitude: Double, longitude: Double)? {
+        didSet {
+            guard let coordinates = coordinates else { return }
+            coordinatesTextView.text = Location.coordinatesString(coordinates.latitude, coordinates.longitude)
+        }
+    }
     
     let scrollView: UIScrollView = {
         let view = UIScrollView()
@@ -34,22 +54,20 @@ class LocationAddViewController: UIViewController, Presentable {
     
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Add new location"
         label.font = UIFont.systemFont(ofSize: 22)
         label.textAlignment = .center
         return label
     }()
     
-    let nameTextView: CustomTextView = {
-        let view = CustomTextView()
-        view.placeholder = "Name"
-        view.backgroundColor = UIColor(named: "mint-light")
-        view.layer.cornerRadius = 10
-        view.textAlignment = .natural
-        view.font = .systemFont(ofSize: 18)
-        view.textContainer.maximumNumberOfLines = 1
-        view.isScrollEnabled = false
-        return view
+    let nameTextField: CustomTextField = {
+        let field = CustomTextField()
+        field.backgroundColor = UIColor(named: "mint-light")
+        field.layer.cornerRadius = 10
+        field.textAlignment = .natural
+        field.font = .systemFont(ofSize: 18)
+        field.textColor = .black
+        field.attributedPlaceholder = NSAttributedString(string: "Name", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+        return field
     }()
     
     let coordinatesTextView: CustomTextView = {
@@ -132,6 +150,39 @@ class LocationAddViewController: UIViewController, Presentable {
         return stack
     }()
     
+    let nameAmbiguityErrorLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Please, enter name."
+        label.textColor = .red
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.font = .systemFont(ofSize: 12)
+        label.isHidden = true
+        return label
+    }()
+    
+    let nameBusyErrorLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Location with this name already exists."
+        label.textColor = .red
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.font = .systemFont(ofSize: 12)
+        label.isHidden = true
+        return label
+    }()
+    
+    let coordinatesAmbiguityErrorLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Please, set coordinates."
+        label.textColor = .red
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.font = .systemFont(ofSize: 12)
+        label.isHidden = true
+        return label
+    }()
+    
     let vStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
@@ -143,6 +194,20 @@ class LocationAddViewController: UIViewController, Presentable {
     
     init(presenter: LocationsPresenterProtocol) {
         self.presenter = presenter
+        self.titleLabel.text = "Add location"
+        self.editMode = .create
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    init(presenter: LocationsPresenterProtocol, location: Location) {
+        self.presenter = presenter
+        self.nameTextField.text = location.name
+        self.oldName = location.name
+        self.coordinatesTextView.text = location.coordinates
+        self.coordinates = (location.latitude, location.longitude)
+        self.commentTextView.text = location.comment
+        self.titleLabel.text = "Edit location"
+        self.editMode = .edit
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -152,7 +217,7 @@ class LocationAddViewController: UIViewController, Presentable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        nameTextView.delegate = self
+        nameTextField.delegate = self
         coordinatesTextView.delegate = self
         commentTextView.delegate = self
         scrollView.delegate = self
@@ -162,10 +227,13 @@ class LocationAddViewController: UIViewController, Presentable {
         bottomHStack.addArrangedSubview(cancelButton)
         bottomHStack.addArrangedSubview(saveButton)
         vStack.addArrangedSubview(titleLabel)
-        vStack.addArrangedSubview(nameTextView)
+        vStack.addArrangedSubview(nameTextField)
         vStack.addArrangedSubview(topHStack)
         vStack.addArrangedSubview(commentTextView)
         vStack.addArrangedSubview(bottomHStack)
+        vStack.addArrangedSubview(nameAmbiguityErrorLabel)
+        vStack.addArrangedSubview(nameBusyErrorLabel)
+        vStack.addArrangedSubview(coordinatesAmbiguityErrorLabel)
         contentView.addSubview(vStack)
         scrollView.addSubview(contentView)
         view.addSubview(scrollView)
@@ -178,6 +246,7 @@ class LocationAddViewController: UIViewController, Presentable {
     
     func setConstraints() {
         vStack.setCustomSpacing(35, after: titleLabel)
+        vStack.setCustomSpacing(25, after: bottomHStack)
         
         scrollView.snp.makeConstraints {
             $0.edges.equalTo(view.safeAreaLayoutGuide.snp.edges)
@@ -199,8 +268,47 @@ class LocationAddViewController: UIViewController, Presentable {
         view.endEditing(true)
     }
     
+    func editLocation(name: String, coordinates: (latitude: Double, longitude: Double), comment: String?) {
+        guard let oldName = oldName else { return }
+        if name == oldName {
+            presenter.restoreLocation(name: name, coordinates: coordinates, comment: comment)
+            self.dismiss(animated: true, completion: nil)
+        } else if presenter.containsLocation(withName: name) {
+            nameBusyErrorLabel.isHidden = false
+        } else {
+            presenter.replaceLocation(oldName: oldName, name: name, coordinates: coordinates, comment: comment)
+            self.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    func createLocation(name: String, coordinates: (latitude: Double, longitude: Double)?, comment: String?) {
+        if let coordinates = coordinates {
+            if name.isEmpty {
+                nameAmbiguityErrorLabel.isHidden = false
+            } else if presenter.containsLocation(withName: name) {
+                nameBusyErrorLabel.isHidden = false
+            } else {
+                presenter.createLocation(name: name, coordinates: coordinates, comment: comment)
+                self.dismiss(animated: true, completion: nil)
+            }
+        } else {
+            coordinatesAmbiguityErrorLabel.isHidden = false
+            if name.isEmpty {
+                nameAmbiguityErrorLabel.isHidden = false
+            } else if presenter.containsLocation(withName: name) {
+                nameBusyErrorLabel.isHidden = false
+            }
+        }
+    }
+    
     @objc func didTapSaveButton() {
-        
+        guard let name = nameTextField.text else { return }
+        let comment = commentTextView.isEmpty ? nil : commentTextView.text
+        if editMode == .edit, let coordinates = coordinates {
+            editLocation(name: name, coordinates: coordinates, comment: comment)
+        } else {
+            createLocation(name: name, coordinates: coordinates, comment: comment)
+        }
     }
     
     @objc func didTapCancelButton() {
@@ -208,27 +316,13 @@ class LocationAddViewController: UIViewController, Presentable {
     }
     
     @objc func didTapLocateButton() {
-        
+        coordinates = (latitude: 44.12, longitude: 56.22)
     }
 }
 
-extension LocationAddViewController: UITextViewDelegate {
-    
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        
-        if textView.text.count + (text.count - range.length) > 30 {
-            guard textView !== nameTextView else { return false }
-        }
-        return true
-    }
-    
-    func textViewDidChange(_ textView: UITextView) {
-//        guard let textView = textView as? CustomTextView else { return }
-//        let endPosition = textView.endOfDocument
-    }
+extension LocationEditor: UITextViewDelegate {
     
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        
         return true
     }
 
@@ -252,8 +346,22 @@ extension LocationAddViewController: UITextViewDelegate {
     }
 }
 
-extension LocationAddViewController: UIScrollViewDelegate {
+extension LocationEditor: UIScrollViewDelegate {
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         scrollView.contentOffset.x = 0
+    }
+}
+
+extension LocationEditor: UITextFieldDelegate {
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let maxLength = 30
+        let currentString: NSString = (textField.text ?? "") as NSString
+        let newString: NSString =  currentString.replacingCharacters(in: range, with: string) as NSString
+        if newString.length > 0, textField === nameTextField {
+            nameAmbiguityErrorLabel.isHidden = true
+        }
+        return newString.length <= maxLength
     }
 }

@@ -10,13 +10,14 @@
 		3F043B41295DD07E0036AC6A /* PersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F043B40295DD07E0036AC6A /* PersistenceManager.swift */; };
 		3F2DDBBA295B8433007B803F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3F2DDBB9295B8433007B803F /* LaunchScreen.storyboard */; };
 		3F4F3050295C64AB0020EDD2 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3F4F304F295C64AB0020EDD2 /* Media.xcassets */; };
+		3F543AE12978751E003C4BA0 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F543AE02978751D003C4BA0 /* CustomTextField.swift */; };
 		3F68CDFA29634A6A00FB0F0B /* LocationTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F68CDF929634A6A00FB0F0B /* LocationTableCell.swift */; };
 		3F7D4F86296493C0009CB727 /* UISearchBar+TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7D4F85296493C0009CB727 /* UISearchBar+TextField.swift */; };
 		3F8358CF296475B100283531 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8358CE296475B100283531 /* Location.swift */; };
 		3F96441B295F730400E04D65 /* LocationsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F96441A295F730400E04D65 /* LocationsCoordinator.swift */; };
 		3F964421295F79CA00E04D65 /* MapPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F964420295F79CA00E04D65 /* MapPresenter.swift */; };
 		3F9FD5AA296DAC26006DA4AC /* Array+InsertInAccending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9FD5A9296DAC26006DA4AC /* Array+InsertInAccending.swift */; };
-		3FBE9DBB295DFFFB0055AECA /* LocationAddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBE9DBA295DFFFB0055AECA /* LocationAddViewController.swift */; };
+		3FBE9DBB295DFFFB0055AECA /* LocationEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBE9DBA295DFFFB0055AECA /* LocationEditor.swift */; };
 		3FCA25A2296F2E1F00ED0721 /* CustomTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FCA25A1296F2E1F00ED0721 /* CustomTextView.swift */; };
 		3FE030B7295F2F9A00EDC03C /* ModuleBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FE030B6295F2F9A00EDC03C /* ModuleBuilder.swift */; };
 		3FE030C0295F37D200EDC03C /* LocationsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FE030BF295F37D200EDC03C /* LocationsPresenter.swift */; };
@@ -34,13 +35,14 @@
 		3F043B40295DD07E0036AC6A /* PersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceManager.swift; sourceTree = "<group>"; };
 		3F2DDBB9295B8433007B803F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3F4F304F295C64AB0020EDD2 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		3F543AE02978751D003C4BA0 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
 		3F68CDF929634A6A00FB0F0B /* LocationTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTableCell.swift; sourceTree = "<group>"; };
 		3F7D4F85296493C0009CB727 /* UISearchBar+TextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UISearchBar+TextField.swift"; sourceTree = "<group>"; };
 		3F8358CE296475B100283531 /* Location.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		3F96441A295F730400E04D65 /* LocationsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationsCoordinator.swift; sourceTree = "<group>"; };
 		3F964420295F79CA00E04D65 /* MapPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPresenter.swift; sourceTree = "<group>"; };
 		3F9FD5A9296DAC26006DA4AC /* Array+InsertInAccending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+InsertInAccending.swift"; sourceTree = "<group>"; };
-		3FBE9DBA295DFFFB0055AECA /* LocationAddViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationAddViewController.swift; sourceTree = "<group>"; };
+		3FBE9DBA295DFFFB0055AECA /* LocationEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationEditor.swift; sourceTree = "<group>"; };
 		3FCA25A1296F2E1F00ED0721 /* CustomTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextView.swift; sourceTree = "<group>"; };
 		3FE030B6295F2F9A00EDC03C /* ModuleBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleBuilder.swift; sourceTree = "<group>"; };
 		3FE030BF295F37D200EDC03C /* LocationsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationsPresenter.swift; sourceTree = "<group>"; };
@@ -97,10 +99,11 @@
 			isa = PBXGroup;
 			children = (
 				4118126B28AE8748008ED400 /* LocationsViewController.swift */,
-				3FBE9DBA295DFFFB0055AECA /* LocationAddViewController.swift */,
+				3FBE9DBA295DFFFB0055AECA /* LocationEditor.swift */,
 				3F68CDF929634A6A00FB0F0B /* LocationTableCell.swift */,
 				3F7D4F85296493C0009CB727 /* UISearchBar+TextField.swift */,
 				3FCA25A1296F2E1F00ED0721 /* CustomTextView.swift */,
+				3F543AE02978751D003C4BA0 /* CustomTextField.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -363,7 +366,8 @@
 				3F7D4F86296493C0009CB727 /* UISearchBar+TextField.swift in Sources */,
 				3F68CDFA29634A6A00FB0F0B /* LocationTableCell.swift in Sources */,
 				3F96441B295F730400E04D65 /* LocationsCoordinator.swift in Sources */,
-				3FBE9DBB295DFFFB0055AECA /* LocationAddViewController.swift in Sources */,
+				3FBE9DBB295DFFFB0055AECA /* LocationEditor.swift in Sources */,
+				3F543AE12978751E003C4BA0 /* CustomTextField.swift in Sources */,
 				3FCA25A2296F2E1F00ED0721 /* CustomTextView.swift in Sources */,
 				3F8358CF296475B100283531 /* Location.swift in Sources */,
 				4118125828AE8321008ED400 /* AppDelegate.swift in Sources */,

@@ -10,6 +10,9 @@ import CoreData
 import SnapKit
 
 protocol LocationsViewProtocol {
+    func insertLocation(at index: Int)
+    func removeLocation(at index: Int)
+    func updateLocation(at index: Int)
 }
 
 protocol LocationTableCellDelegate: AnyObject {
@@ -25,6 +28,7 @@ class LocationsViewController: UIViewController {
         table.register(LocationTableCell.self, forCellReuseIdentifier: LocationTableCell.id)
         table.separatorStyle = .none
         table.estimatedRowHeight = UITableView.automaticDimension
+        table.contentInset = UIEdgeInsets(top: 5, left: 0, bottom: 0, right: 0)
         return table
     }()
     
@@ -68,12 +72,15 @@ class LocationsViewController: UIViewController {
         configureNavigationBar()
         configureTabBar()
         configureTabBar()
+        
+        setConstraints()
     }
 	
-	override func viewDidLayoutSubviews() {
-		super.viewDidLayoutSubviews()
-        locationsTable.frame = view.safeAreaLayoutGuide.layoutFrame
-	}
+    func setConstraints() {
+        locationsTable.snp.makeConstraints {
+            $0.edges.equalTo(view.safeAreaLayoutGuide.snp.edges)
+        }
+    }
     
     func configureNavigationBar() {
         navigationItem.searchController = searchController
@@ -101,15 +108,11 @@ class LocationsViewController: UIViewController {
     }
     
     @objc func didTapAddButton() {
-        let modalView = LocationAddViewController(presenter: presenter)
+        let modalView = LocationEditor(presenter: presenter)
         if #available(iOS 13.0, *) {
             modalView.isModalInPresentation = true
         }
         present(modalView, animated: true)
-    }
-    
-    func updateTableContents() {
-        locationsTable.reloadData()
     }
 }
 
@@ -143,7 +146,11 @@ extension LocationsViewController: UITableViewDelegate {
     
     func edit(rowIndexPathAt indexPath: IndexPath) -> UIContextualAction {
         let action = UIContextualAction(style: .normal, title: nil) { (_, _, _) in
-            print("editing row")
+            let modalView = LocationEditor(presenter: self.presenter, location: self.presenter.getLocationWithPrefixOnIndex(id: indexPath.row))
+            if #available(iOS 13.0, *) {
+                modalView.isModalInPresentation = true
+            }
+            self.present(modalView, animated: true)
         }
         action.backgroundColor = .white
         action.image = UIImage(named: "edit")
@@ -152,7 +159,7 @@ extension LocationsViewController: UITableViewDelegate {
     
     func delete(rowIndexPathAt indexPath: IndexPath) -> UIContextualAction {
         let action = UIContextualAction(style: .destructive, title: nil) { (_, _, _) in
-            print("deleting row")
+            self.presenter.removeLocation(at: indexPath.row)
         }
         action.backgroundColor = .white
         action.image = UIImage(named: "delete")
@@ -175,14 +182,31 @@ extension LocationsViewController: UITableViewDelegate {
 }
 
 extension LocationsViewController: LocationsViewProtocol {
+
+    func insertLocation(at index: Int) {
+        locationsTable.beginUpdates()
+        locationsTable.insertRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+        locationsTable.endUpdates()
+    }
     
+    func removeLocation(at index: Int) {
+        locationsTable.beginUpdates()
+        locationsTable.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+        locationsTable.endUpdates()
+    }
+    
+    func updateLocation(at index: Int) {
+        locationsTable.beginUpdates()
+        locationsTable.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+        locationsTable.beginUpdates()
+    }
 }
 
 extension LocationsViewController: LocationTableCellDelegate {
+    
     func locationCellArrowButtonTapped(cell: LocationTableCell) {
-        guard let indexPath = locationsTable.indexPath(for: cell) else { return }
         locationsTable.beginUpdates()
-        cell.showOrHideDetails()
+        cell.switchDetailsAppearance()
         locationsTable.endUpdates()
     }
 }

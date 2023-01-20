@@ -11,6 +11,9 @@ class CustomTextView: UITextView {
 
     var isPlaceholderPresented = false
     var placeholderColor: UIColor = .lightGray
+    var isEmpty: Bool {
+        return isPlaceholderPresented
+    }
     
     var placeholder: String? {
         didSet {

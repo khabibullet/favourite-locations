@@ -16,9 +16,7 @@ class LocationTableCell: UITableViewCell {
         didSet {
             guard let location = location else { return }
             title.text = location.name
-            let northOrSouth = location.latitude > 0 ? "N" : "S"
-            let eastOrWest = location.longitude > 0 ? "E" : "W"
-            coordinates.text = String(format: "%.2f°%@, %.2f°%@", abs(location.latitude), northOrSouth, abs(location.longitude), eastOrWest)
+            coordinates.text = location.coordinates
             if let comment = location.comment {
                 self.comment.text = comment
             }
@@ -105,11 +103,12 @@ class LocationTableCell: UITableViewCell {
     
     func setConstraints() {
         vStack.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(10)
+            $0.horizontalEdges.equalToSuperview().inset(10)
+            $0.verticalEdges.equalToSuperview().inset(5)
         }
     }
     
-    func showOrHideDetails() {
+    func switchDetailsAppearance() {
         UIView.animate(withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.01, options: .curveEaseIn) {
             if self.arrowButton.isSelected {
                 self.coordinates.alpha = 0.0
