@@ -145,12 +145,14 @@ extension LocationsViewController: UITableViewDataSource {
 extension LocationsViewController: UITableViewDelegate {
     
     func edit(rowIndexPathAt indexPath: IndexPath) -> UIContextualAction {
-        let action = UIContextualAction(style: .normal, title: nil) { (_, _, _) in
-            let modalView = LocationEditor(presenter: self.presenter, location: self.presenter.getLocationWithPrefixOnIndex(id: indexPath.row))
+        let action = UIContextualAction(style: .normal, title: nil) { (_, _, complete) in
+            let location = self.presenter.getLocationWithPrefixOnIndex(id: indexPath.row)
+            let editorView = LocationEditor(presenter: self.presenter, location: location)
             if #available(iOS 13.0, *) {
-                modalView.isModalInPresentation = true
+                editorView.isModalInPresentation = true
             }
-            self.present(modalView, animated: true)
+            self.present(editorView, animated: true)
+            complete(true)
         }
         action.backgroundColor = .white
         action.image = UIImage(named: "edit")
@@ -158,8 +160,9 @@ extension LocationsViewController: UITableViewDelegate {
     }
     
     func delete(rowIndexPathAt indexPath: IndexPath) -> UIContextualAction {
-        let action = UIContextualAction(style: .destructive, title: nil) { (_, _, _) in
+        let action = UIContextualAction(style: .destructive, title: nil) { (_, _, complete) in
             self.presenter.removeLocation(at: indexPath.row)
+            complete(true)
         }
         action.backgroundColor = .white
         action.image = UIImage(named: "delete")
@@ -196,9 +199,7 @@ extension LocationsViewController: LocationsViewProtocol {
     }
     
     func updateLocation(at index: Int) {
-        locationsTable.beginUpdates()
         locationsTable.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
-        locationsTable.beginUpdates()
     }
 }
 

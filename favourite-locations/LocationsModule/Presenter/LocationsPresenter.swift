@@ -38,9 +38,6 @@ class LocationsPresenter: LocationsPresenterProtocol {
     func fetchLocations() {
         persistenceManager.fetchModelEntities(entityName: Location.entityName, ofType: Location.self) { (entities) in
             self.locations.append(contentsOf: entities)
-            
-            // Test data
-            self.putTestLocations()
         }
     }
     
@@ -87,43 +84,16 @@ class LocationsPresenter: LocationsPresenterProtocol {
     
     func restoreLocation(name: String, coordinates: (latitude: Double, longitude: Double), comment: String?) {
         guard let index = locations.firstIndex(where: { $0.name == name }) else { return }
-        locations[index].latitude = coordinates.latitude
-        locations[index].longitude = coordinates.longitude
-        locations[index].comment = comment
-        view.updateLocation(at: index)
+        let location = locations[index]
+        location.latitude = coordinates.latitude
+        location.longitude = coordinates.longitude
+        location.comment = comment
         persistenceManager.saveContext()
+        view.updateLocation(at: index)
     }
     
     func replaceLocation(oldName: String, name: String, coordinates: (latitude: Double, longitude: Double), comment: String?) {
         removeLocation(byName: oldName)
         createLocation(name: name, coordinates: coordinates, comment: comment)
-    }
-}
-
-
-
-
-
-
-
-
-
-extension LocationsPresenter {
-    func putTestLocations() {
-        if locations.count == 0 {
-            let location1: Location = {
-                let location = Location(context: self.persistenceManager.viewContext)
-                location.name = "Kazan"
-                location.longitude = -45.01
-                location.latitude = -33.45
-                // swiftlint:disable line_length
-                location.comment = "The capital of Tatarstan. One of the most antient cities in Russia. There is one more sentence just to enlarge cell height."
-                // swiftlint:enable line_length
-                return location
-            }()
-            self.locations.append(contentsOf: [
-                location1
-            ])
-        }
     }
 }

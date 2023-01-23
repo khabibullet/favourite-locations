@@ -17,9 +17,7 @@ class LocationTableCell: UITableViewCell {
             guard let location = location else { return }
             title.text = location.name
             coordinates.text = location.coordinates
-            if let comment = location.comment {
-                self.comment.text = comment
-            }
+            comment.text = location.comment
         }
     }
     

@@ -8,10 +8,6 @@
 import UIKit
 import SnapKit
 
-enum ValidationResult {
-    case success
-    case error
-}
 
 enum EditMode {
     case edit
@@ -70,8 +66,8 @@ class LocationEditor: UIViewController, Presentable {
         return field
     }()
     
-    let coordinatesTextView: CustomTextView = {
-        let view = CustomTextView()
+    let coordinatesTextView: UITextView = {
+        let view = UITextView()
         view.placeholder = "Coordinates"
         view.backgroundColor = UIColor(named: "mint-light")
         view.isUserInteractionEnabled = false
@@ -79,11 +75,12 @@ class LocationEditor: UIViewController, Presentable {
         view.layer.cornerRadius = 10
         view.textAlignment = .natural
         view.font = .systemFont(ofSize: 18)
+        view.textColor = .lightGray
         return view
     }()
     
-    let commentTextView: CustomTextView = {
-        let view = CustomTextView()
+    let commentTextView: UITextView = {
+        let view = UITextView()
         view.placeholder = "Description"
         view.backgroundColor = UIColor(named: "mint-light")
         view.layer.cornerRadius = 10
@@ -203,9 +200,11 @@ class LocationEditor: UIViewController, Presentable {
         self.presenter = presenter
         self.nameTextField.text = location.name
         self.oldName = location.name
-        self.coordinatesTextView.text = location.coordinates
         self.coordinates = (location.latitude, location.longitude)
+        self.coordinatesTextView.text = Location.coordinatesString(location.latitude, location.longitude)
+        self.coordinatesTextView.hidePlaceholder()
         self.commentTextView.text = location.comment
+        self.commentTextView.hidePlaceholder()
         self.titleLabel.text = "Edit location"
         self.editMode = .edit
         super.init(nibName: nil, bundle: nil)
@@ -218,9 +217,9 @@ class LocationEditor: UIViewController, Presentable {
     override func viewDidLoad() {
         super.viewDidLoad()
         nameTextField.delegate = self
+        scrollView.delegate = self
         coordinatesTextView.delegate = self
         commentTextView.delegate = self
-        scrollView.delegate = self
         
         topHStack.addArrangedSubview(coordinatesTextView)
         topHStack.addArrangedSubview(locateButton)
@@ -241,7 +240,15 @@ class LocationEditor: UIViewController, Presentable {
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         scrollView.addGestureRecognizer(tap)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
         setConstraints()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     func setConstraints() {
@@ -268,11 +275,24 @@ class LocationEditor: UIViewController, Presentable {
         view.endEditing(true)
     }
     
+    @objc func keyboardWillShow(_ notification: Notification) {
+        guard let userInfo = notification.userInfo else { return }
+        guard let keyboardFrameSize = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
+        scrollView.contentOffset = CGPoint(x: 0, y: keyboardFrameSize.height)
+    }
+    
+    @objc func keyboardWillHide() {
+        scrollView.contentOffset = CGPoint.zero
+    }
+
+    
     func editLocation(name: String, coordinates: (latitude: Double, longitude: Double), comment: String?) {
         guard let oldName = oldName else { return }
         if name == oldName {
             presenter.restoreLocation(name: name, coordinates: coordinates, comment: comment)
             self.dismiss(animated: true, completion: nil)
+        } else if name.isEmpty {
+            nameAmbiguityErrorLabel.isHidden = false
         } else if presenter.containsLocation(withName: name) {
             nameBusyErrorLabel.isHidden = false
         } else {
@@ -303,7 +323,7 @@ class LocationEditor: UIViewController, Presentable {
     
     @objc func didTapSaveButton() {
         guard let name = nameTextField.text else { return }
-        let comment = commentTextView.isEmpty ? nil : commentTextView.text
+        let comment = commentTextView.text
         if editMode == .edit, let coordinates = coordinates {
             editLocation(name: name, coordinates: coordinates, comment: comment)
         } else {
@@ -317,32 +337,8 @@ class LocationEditor: UIViewController, Presentable {
     
     @objc func didTapLocateButton() {
         coordinates = (latitude: 44.12, longitude: 56.22)
-    }
-}
-
-extension LocationEditor: UITextViewDelegate {
-    
-    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        return true
-    }
-
-    
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        guard let textView = textView as? CustomTextView else { return }
-        if textView.isPlaceholderPresented {
-            textView.text = ""
-            textView.textColor = .black
-            textView.isPlaceholderPresented = false
-        }
-    }
-    
-    func textViewDidEndEditing(_ textView: UITextView) {
-        guard let textView = textView as? CustomTextView else { return }
-        if textView.text.count == 0 {
-            textView.isPlaceholderPresented = true
-            textView.text = textView.placeholder
-            textView.textColor = textView.placeholderColor
-        }
+        coordinatesAmbiguityErrorLabel.isHidden = true
+        coordinatesTextView.hidePlaceholder()
     }
 }
 
@@ -356,6 +352,8 @@ extension LocationEditor: UIScrollViewDelegate {
 extension LocationEditor: UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        nameBusyErrorLabel.isHidden = true
+        nameAmbiguityErrorLabel.isHidden = true
         let maxLength = 30
         let currentString: NSString = (textField.text ?? "") as NSString
         let newString: NSString =  currentString.replacingCharacters(in: range, with: string) as NSString
@@ -363,5 +361,18 @@ extension LocationEditor: UITextFieldDelegate {
             nameAmbiguityErrorLabel.isHidden = true
         }
         return newString.length <= maxLength
+    }
+}
+
+extension LocationEditor: UITextViewDelegate {
+    
+    public func textViewDidChange(_ textView: UITextView) {
+        if let placeholderLabel = textView.viewWithTag(100) as? UILabel {
+            placeholderLabel.isHidden = !textView.text.isEmpty
+        }
+    }
+    
+    public func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        return true
     }
 }
