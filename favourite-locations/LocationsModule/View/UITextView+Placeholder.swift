@@ -7,10 +7,8 @@
 
 import UIKit
 
-/// Extend UITextView and implemented UITextViewDelegate to listen for changes
 extension UITextView {
     
-    /// The UITextView placeholder text
     public var placeholder: String? {
         get {
             var placeholderText: String?
@@ -35,7 +33,6 @@ extension UITextView {
         }
     }
     
-    /// Adds a placeholder UILabel to this UITextView
     private func addPlaceholder(_ placeholderText: String) {
         let placeholderLabel = UILabel()
         

@@ -36,8 +36,6 @@ class LocationEditor: UIViewController, Presentable {
         let view = UIScrollView()
         view.backgroundColor = .white
         view.isScrollEnabled = true
-        view.bounces = true
-        view.alwaysBounceVertical = true
         view.showsHorizontalScrollIndicator = false
         view.showsVerticalScrollIndicator = false
         view.scrollsToTop = false
@@ -227,12 +225,12 @@ class LocationEditor: UIViewController, Presentable {
         bottomHStack.addArrangedSubview(saveButton)
         vStack.addArrangedSubview(titleLabel)
         vStack.addArrangedSubview(nameTextField)
-        vStack.addArrangedSubview(topHStack)
-        vStack.addArrangedSubview(commentTextView)
-        vStack.addArrangedSubview(bottomHStack)
         vStack.addArrangedSubview(nameAmbiguityErrorLabel)
         vStack.addArrangedSubview(nameBusyErrorLabel)
+        vStack.addArrangedSubview(topHStack)
         vStack.addArrangedSubview(coordinatesAmbiguityErrorLabel)
+        vStack.addArrangedSubview(commentTextView)
+        vStack.addArrangedSubview(bottomHStack)
         contentView.addSubview(vStack)
         scrollView.addSubview(contentView)
         view.addSubview(scrollView)
@@ -240,8 +238,8 @@ class LocationEditor: UIViewController, Presentable {
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         scrollView.addGestureRecognizer(tap)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(kbWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(kbWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
         setConstraints()
     }
@@ -271,21 +269,38 @@ class LocationEditor: UIViewController, Presentable {
         }
     }
     
+    var activeSubview: UIView?
+    var keyboardHeight: CGFloat?
+    
+    func scrollToBottom() {
+        guard let activeSubview = activeSubview, let keyboardHeight = keyboardHeight else { return }
+        let bottom = vStack.frame.origin.y + activeSubview.frame.origin.y + activeSubview.frame.height + 10
+        let visibleAreaHeight = view.frame.height - keyboardHeight
+        let offset = bottom - visibleAreaHeight
+        if offset > 0 {
+            scrollView.setContentOffset(CGPoint(x: 0, y: offset), animated: true)
+        } else {
+            scrollView.setContentOffset(.zero, animated: true)
+        }
+    }
+    
+    @objc func kbWillShow(_ notification: Notification) {
+        guard let userInfo = notification.userInfo else { return }
+        guard let frameSize = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
+        keyboardHeight = frameSize.height
+        scrollToBottom()
+        print("will show")
+    }
+    
+    @objc func kbWillHide() {
+        scrollView.setContentOffset(.zero, animated: true)
+        keyboardHeight = nil
+    }
+    
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
-    
-    @objc func keyboardWillShow(_ notification: Notification) {
-        guard let userInfo = notification.userInfo else { return }
-        guard let keyboardFrameSize = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
-        scrollView.contentOffset = CGPoint(x: 0, y: keyboardFrameSize.height)
-    }
-    
-    @objc func keyboardWillHide() {
-        scrollView.contentOffset = CGPoint.zero
-    }
 
-    
     func editLocation(name: String, coordinates: (latitude: Double, longitude: Double), comment: String?) {
         guard let oldName = oldName else { return }
         if name == oldName {
@@ -342,37 +357,44 @@ class LocationEditor: UIViewController, Presentable {
     }
 }
 
-extension LocationEditor: UIScrollViewDelegate {
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        scrollView.contentOffset.x = 0
-    }
-}
-
 extension LocationEditor: UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let oldStr: NSString = (textField.text ?? "") as NSString
+        
         nameBusyErrorLabel.isHidden = true
         nameAmbiguityErrorLabel.isHidden = true
-        let maxLength = 30
-        let currentString: NSString = (textField.text ?? "") as NSString
-        let newString: NSString =  currentString.replacingCharacters(in: range, with: string) as NSString
-        if newString.length > 0, textField === nameTextField {
+        if oldStr.length > 0 {
             nameAmbiguityErrorLabel.isHidden = true
         }
-        return newString.length <= maxLength
+        
+        let newStr: NSString =  oldStr.replacingCharacters(in: range, with: string) as NSString
+        return newStr.length <= 6
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        activeSubview = textField
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        activeSubview = nil
     }
 }
 
 extension LocationEditor: UITextViewDelegate {
     
-    public func textViewDidChange(_ textView: UITextView) {
+    func textViewDidChange(_ textView: UITextView) {
         if let placeholderLabel = textView.viewWithTag(100) as? UILabel {
             placeholderLabel.isHidden = !textView.text.isEmpty
         }
+        scrollToBottom()
     }
     
-    public func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        return true
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        activeSubview = textView
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        activeSubview = nil
     }
 }
