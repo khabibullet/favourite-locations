@@ -9,9 +9,11 @@ import UIKit
 
 protocol CoordinatorProtocol: AnyObject {
     var tabBarController: UITabBarController! { get }
+    func addMapPin(completionHandler: @escaping ((Double, Double)?) -> Void)
+    func didAddPin()
 }
 
-class LocationsCoordinator: NSObject, CoordinatorProtocol {
+class LocationsCoordinator: NSObject {
     var tabBarController: UITabBarController!
     let locationsPresenter: LocationsPresenterProtocol
     let mapPresenter: MapPresenterProtocol
@@ -24,6 +26,15 @@ class LocationsCoordinator: NSObject, CoordinatorProtocol {
     }
 }
 
-extension LocationsCoordinator: UITabBarControllerDelegate {
+extension LocationsCoordinator: CoordinatorProtocol {
     
+    func addMapPin(completionHandler: @escaping ((Double, Double)?) -> Void) {
+        mapPresenter.addMapPin(completionHandler: completionHandler)
+        print("here")
+        tabBarController.selectedIndex = 1
+    }
+    
+    func didAddPin() {
+        tabBarController.selectedIndex = 0
+    }
 }

@@ -26,8 +26,6 @@ class LocationEditor: UIViewController, Presentable {
     let editMode: EditMode
     var oldName: String?
     
-    var previousNumOfLines: Int = 0
-    
     var coordinates: (latitude: Double, longitude: Double)? {
         didSet {
             guard let coordinates = coordinates else { return }
@@ -350,9 +348,10 @@ class LocationEditor: UIViewController, Presentable {
     }
     
     @objc func didTapLocateButton() {
-        coordinates = (latitude: 44.12, longitude: 56.22)
-        coordinatesAmbiguityErrorLabel.isHidden = true
-        coordinatesTextView.hidePlaceholder()
+        presenter.coordinatesInputInitiated { coordinates in
+            guard let coordinates = coordinates else { return }
+            self.coordinates = coordinates
+        }
     }
 }
 

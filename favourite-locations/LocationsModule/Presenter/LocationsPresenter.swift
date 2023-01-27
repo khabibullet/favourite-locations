@@ -19,6 +19,7 @@ protocol LocationsPresenterProtocol: AnyObject {
     func removeLocation(byName name: String)
     func removeLocation(at index: Int)
     func replaceLocation(oldName: String, name: String, coordinates: (latitude: Double, longitude: Double), comment: String?)
+    func coordinatesInputInitiated(completionHandler: @escaping ((Double, Double)?) -> Void)
 }
 
 class LocationsPresenter: LocationsPresenterProtocol {
@@ -95,5 +96,9 @@ class LocationsPresenter: LocationsPresenterProtocol {
     func replaceLocation(oldName: String, name: String, coordinates: (latitude: Double, longitude: Double), comment: String?) {
         removeLocation(byName: oldName)
         createLocation(name: name, coordinates: coordinates, comment: comment)
+    }
+    
+    func coordinatesInputInitiated(completionHandler: @escaping ((Double, Double)?) -> Void) {
+        coordinator.addMapPin(completionHandler: completionHandler)
     }
 }

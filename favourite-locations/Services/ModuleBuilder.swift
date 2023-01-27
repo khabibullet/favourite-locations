@@ -39,7 +39,8 @@ class ModuleBuilder: Builder {
             tabBarController.addChild(navigationController)
         }
         if let mapView = mapPresenter.view as? UIViewController {
-            tabBarController.addChild(mapView)
+            let navigationController = UINavigationController(rootViewController: mapView)
+            tabBarController.addChild(navigationController)
         }
         let coordinator = LocationsCoordinator(locationsPresenter: locationsPresenter, mapPresenter: mapPresenter, tabBarController: tabBarController)
         locationsPresenter.coordinator = coordinator
