@@ -32,6 +32,11 @@ class ModuleBuilder: Builder {
         return presenter
     }
     
+    static func buildEditorModule() -> LocationEditorPresenterProtocol {
+        
+        let view = 
+    }
+    
     static func buildCoordinator(locationsPresenter: LocationsPresenterProtocol, mapPresenter: MapPresenterProtocol) -> CoordinatorProtocol {
         let tabBarController = UITabBarController()
         if let locationsView = locationsPresenter.view as? UIViewController {

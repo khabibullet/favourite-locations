@@ -8,17 +8,22 @@
 import UIKit
 
 protocol CoordinatorProtocol: AnyObject {
-    var tabBarController: UITabBarController! { get }
     func addMapPin(completionHandler: @escaping ((Double, Double)?) -> Void)
     func didAddPin()
 }
 
 class LocationsCoordinator: NSObject {
-    var tabBarController: UITabBarController!
-    let locationsPresenter: LocationsPresenterProtocol
-    let mapPresenter: MapPresenterProtocol
+    unowned var tabBarController: UITabBarController
+    unowned var locationsPresenter: LocationsPresenterProtocol
+    unowned var mapPresenter: MapPresenterProtocol
+    unowned var editorPresenter: LocationEditorPresenterProtocol
     
-    init(locationsPresenter: LocationsPresenterProtocol, mapPresenter: MapPresenterProtocol, tabBarController: UITabBarController) {
+    init(
+        locationsPresenter: LocationsPresenterProtocol,
+        mapPresenter: MapPresenterProtocol,
+        editorPresenter: LocationEditorPresenterProtocol,
+        tabBarController: UITabBarController
+    ) {
         self.locationsPresenter = locationsPresenter
         self.mapPresenter = mapPresenter
         self.tabBarController = tabBarController

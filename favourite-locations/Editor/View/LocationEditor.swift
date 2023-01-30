@@ -9,21 +9,14 @@ import UIKit
 import SnapKit
 import CoreData
 
-
-enum EditMode {
-    case edit
-    case create
-}
-
-protocol Presentable {
+protocol LocationsEditorProtocol {
     
 }
 
-class LocationEditor: UIViewController, Presentable {
+class LocationEditor: UIViewController, LocationsEditorProtocol {
     
     let presenter: LocationsPresenterProtocol
     
-    let editMode: EditMode
     var oldName: String?
     
     var coordinates: (latitude: Double, longitude: Double)? {
@@ -44,13 +37,6 @@ class LocationEditor: UIViewController, Presentable {
     
     let contentView: UIView = {
         return UIView()
-    }()
-    
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 22)
-        label.textAlignment = .center
-        return label
     }()
     
     let nameTextField: CustomTextField = {
@@ -190,8 +176,6 @@ class LocationEditor: UIViewController, Presentable {
     
     init(presenter: LocationsPresenterProtocol) {
         self.presenter = presenter
-        self.titleLabel.text = "Add location"
-        self.editMode = .create
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -204,8 +188,6 @@ class LocationEditor: UIViewController, Presentable {
         self.coordinatesTextView.hidePlaceholder()
         self.commentTextView.text = location.comment
         self.commentTextView.hidePlaceholder()
-        self.titleLabel.text = "Edit location"
-        self.editMode = .edit
         super.init(nibName: nil, bundle: nil)
     }
     

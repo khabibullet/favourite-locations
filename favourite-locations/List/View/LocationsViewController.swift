@@ -9,7 +9,7 @@ import UIKit
 import CoreData
 import SnapKit
 
-protocol LocationsViewProtocol {
+protocol LocationsViewProtocol: AnyObject {
     func insertLocation(at index: Int)
     func removeLocation(at index: Int)
     func updateLocation(at index: Int)
@@ -146,13 +146,8 @@ extension LocationsViewController: UITableViewDelegate {
     
     func edit(rowIndexPathAt indexPath: IndexPath) -> UIContextualAction {
         let action = UIContextualAction(style: .normal, title: nil) { (_, _, complete) in
-            let location = self.presenter.getLocationWithPrefixOnIndex(id: indexPath.row)
-            let editorView = LocationEditor(presenter: self.presenter, location: location)
-            if #available(iOS 13.0, *) {
-                editorView.isModalInPresentation = true
-            }
-            self.present(editorView, animated: true)
             complete(true)
+            self.presenter.setupEditorForLocation(with: indexPath.row)
         }
         action.backgroundColor = .white
         action.image = UIImage(named: "edit")
@@ -161,8 +156,8 @@ extension LocationsViewController: UITableViewDelegate {
     
     func delete(rowIndexPathAt indexPath: IndexPath) -> UIContextualAction {
         let action = UIContextualAction(style: .destructive, title: nil) { (_, _, complete) in
-            self.presenter.removeLocation(at: indexPath.row)
             complete(true)
+            self.presenter.removeLocation(at: indexPath.row)
         }
         action.backgroundColor = .white
         action.image = UIImage(named: "delete")

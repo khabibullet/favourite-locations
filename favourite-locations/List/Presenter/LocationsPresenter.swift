@@ -9,8 +9,11 @@ import Foundation
 import UIKit
 
 protocol LocationsPresenterProtocol: AnyObject {
-    var coordinator: CoordinatorProtocol! { get set }
-    var view: LocationsViewProtocol! { get }
+    func coordinatesInputInitiated(completionHandler: @escaping ((Double, Double)?) -> Void)
+    func setupEditorForLocation(with index: Int)
+}
+
+protocol LocationsManagerProtocol: AnyObject {
     func getLocationWithPrefixOnIndex(id: Int) -> Location
     func getNumberOfLocationsWithPrefix() -> Int
     func containsLocation(withName name: String) -> Bool
@@ -19,18 +22,22 @@ protocol LocationsPresenterProtocol: AnyObject {
     func removeLocation(byName name: String)
     func removeLocation(at index: Int)
     func replaceLocation(oldName: String, name: String, coordinates: (latitude: Double, longitude: Double), comment: String?)
-    func coordinatesInputInitiated(completionHandler: @escaping ((Double, Double)?) -> Void)
 }
 
-class LocationsPresenter: LocationsPresenterProtocol {
-    var view: LocationsViewProtocol!
-    var locations: [Location]!
-    let persistenceManager: PersistenceStoreManaged
-    weak var coordinator: CoordinatorProtocol!
+class LocationsPresenter {
+    unowned private var locationsView: LocationsViewProtocol
+    unowned var coordinator: CoordinatorProtocol!
+    private let persistenceManager: PersistenceStoreManaged
+
+    var locations: [Location]
     var searchKey = ""
     
+    var locationsWithPrefix: [Location] {
+        return locations.filter { $0.name.hasPrefix(searchKey) }
+    }
+    
     init(view: LocationsViewProtocol, model: [Location], persistenceManager: PersistenceStoreManaged) {
-        self.view = view
+        self.locationsView = view
         self.locations = model
         self.persistenceManager = persistenceManager
         fetchLocations()
@@ -41,12 +48,20 @@ class LocationsPresenter: LocationsPresenterProtocol {
             self.locations.append(contentsOf: entities)
         }
     }
-    
-    
-    var locationsWithPrefix: [Location] {
-        return locations.filter { $0.name.hasPrefix(searchKey) }
+}
+
+extension LocationsPresenter: LocationsPresenterProtocol {
+    func coordinatesInputInitiated(completionHandler: @escaping ((Double, Double)?) -> Void) {
+        coordinator.addMapPin(completionHandler: completionHandler)
     }
     
+    func setupEditorForLocation(with index: Int) {
+        let location = getLocationWithPrefixOnIndex(id: index)
+        
+    }
+}
+
+extension LocationsPresenter: LocationsManagerProtocol {
     func getLocationWithPrefixOnIndex(id: Int) -> Location {
         return locationsWithPrefix[id]
     }
@@ -68,7 +83,7 @@ class LocationsPresenter: LocationsPresenterProtocol {
         persistenceManager.saveContext()
         let index = locations.insertIndexInAccending(location)
         locations.insert(location, at: index)
-        view.insertLocation(at: index)
+        locationsView.insertLocation(at: index)
     }
     
     func removeLocation(byName name: String) {
@@ -79,7 +94,7 @@ class LocationsPresenter: LocationsPresenterProtocol {
     func removeLocation(at index: Int) {
         persistenceManager.viewContext.delete(locations[index])
         locations.remove(at: index)
-        view.removeLocation(at: index)
+        locationsView.removeLocation(at: index)
         persistenceManager.saveContext()
     }
     
@@ -90,15 +105,11 @@ class LocationsPresenter: LocationsPresenterProtocol {
         location.longitude = coordinates.longitude
         location.comment = comment
         persistenceManager.saveContext()
-        view.updateLocation(at: index)
+        locationsView.updateLocation(at: index)
     }
     
     func replaceLocation(oldName: String, name: String, coordinates: (latitude: Double, longitude: Double), comment: String?) {
         removeLocation(byName: oldName)
         createLocation(name: name, coordinates: coordinates, comment: comment)
-    }
-    
-    func coordinatesInputInitiated(completionHandler: @escaping ((Double, Double)?) -> Void) {
-        coordinator.addMapPin(completionHandler: completionHandler)
     }
 }
