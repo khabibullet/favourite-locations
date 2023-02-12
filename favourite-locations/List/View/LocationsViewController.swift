@@ -21,7 +21,7 @@ protocol LocationTableCellDelegate: AnyObject {
 
 class LocationsViewController: UIViewController {
 	
-    weak var presenter: LocationsPresenterProtocol!
+    var presenter: LocationsPresenterProtocol!
     
     let locationsTable: UITableView = {
         let table = UITableView()
@@ -29,6 +29,7 @@ class LocationsViewController: UIViewController {
         table.separatorStyle = .none
         table.estimatedRowHeight = UITableView.automaticDimension
         table.contentInset = UIEdgeInsets(top: 5, left: 0, bottom: 0, right: 0)
+        table.backgroundColor = .white
         return table
     }()
     
@@ -38,7 +39,11 @@ class LocationsViewController: UIViewController {
         search.searchBar.placeholder = "Search"
         search.definesPresentationContext = true
         search.hidesNavigationBarDuringPresentation = false
+        search.searchBar.textField?.layer.cornerRadius = 10
+        search.searchBar.textField?.borderStyle = .none
         search.searchBar.textField?.backgroundColor = .white
+        search.searchBar.textField?.layer.borderColor = UIColor(named: "mint-dark")?.cgColor
+        search.searchBar.textField?.layer.borderWidth = 1
         return search
     }()
     
@@ -52,16 +57,14 @@ class LocationsViewController: UIViewController {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Locations"
-        label.textColor = UIColor(named: "mint-dark")
+        label.textColor = .black
         label.sizeToFit()
-        label.font = UIFont.boldSystemFont(ofSize: 16.0)
+        label.font = UIFont.systemFont(ofSize: 18.0)
         return label
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = .white
 		view.addSubview(locationsTable)
         
         locationsTable.delegate = self
@@ -70,7 +73,6 @@ class LocationsViewController: UIViewController {
         searchController.searchResultsUpdater = self
 
         configureNavigationBar()
-        configureTabBar()
         configureTabBar()
         
         setConstraints()
@@ -83,36 +85,34 @@ class LocationsViewController: UIViewController {
     }
     
     func configureNavigationBar() {
-        navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = false
         let image = UIImage(named: "add")
         let item = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(didTapAddButton))
+        
         navigationItem.rightBarButtonItem = item
         navigationItem.titleView = titleLabel
-        navigationController?.navigationBar.backgroundColor = UIColor(named: "mint-light")
-        navigationController?.navigationBar.layer.shadowColor = UIColor(named: "mint-light")?.cgColor
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+        
+        guard let bar = navigationController?.navigationBar else { return }
+        bar.backgroundColor = UIColor(named: "mint-extra-light")
+        bar.layer.shadowColor = UIColor(named: "mint-extra-light")?.cgColor
         if #available(iOS 13.0, *) {
             let appearance = UINavigationBarAppearance()
-            appearance.backgroundColor = UIColor(named: "mint-light")
+            appearance.backgroundColor = UIColor(named: "mint-extra-light")
             appearance.shadowColor = .clear
-            navigationController?.navigationBar.scrollEdgeAppearance = appearance
-            navigationController?.navigationBar.standardAppearance = appearance
+            bar.scrollEdgeAppearance = appearance
+            bar.standardAppearance = appearance
         }
     }
     
     func configureTabBar() {
+        tabBarController?.tabBar.unselectedItemTintColor = UIColor(named: "mint-light-2")
+        tabBarController?.tabBar.backgroundColor = UIColor(named: "mint-extra-light")
         tabBarItem = UITabBarItem(title: nil, image: UIImage(named: "list"), tag: 0)
         tabBarItem.imageInsets = UIEdgeInsets.init(top: 5, left: 0, bottom: -5, right: 0)
-        tabBarController?.tabBar.backgroundColor = UIColor(named: "mint-light")
-        tabBarController?.tabBar.unselectedItemTintColor = UIColor(named: "mint-light-2")
     }
     
     @objc func didTapAddButton() {
-        let modalView = LocationEditor(presenter: presenter)
-        if #available(iOS 13.0, *) {
-            modalView.isModalInPresentation = true
-        }
-        present(modalView, animated: true)
     }
 }
 
@@ -147,7 +147,7 @@ extension LocationsViewController: UITableViewDelegate {
     func edit(rowIndexPathAt indexPath: IndexPath) -> UIContextualAction {
         let action = UIContextualAction(style: .normal, title: nil) { (_, _, complete) in
             complete(true)
-            self.presenter.setupEditorForLocation(with: indexPath.row)
+            self.presenter.editLocationViaEditor(location: indexPath.row)
         }
         action.backgroundColor = .white
         action.image = UIImage(named: "edit")

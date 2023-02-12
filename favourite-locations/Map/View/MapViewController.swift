@@ -19,7 +19,8 @@ protocol MapViewProtocol: AnyObject {
 }
 
 class MapViewController: UIViewController {
-    weak var presenter: MapPresenterProtocol!
+    
+    var presenter: MapPresenterProtocol!
 	
     var selectedPin: MKPointAnnotation?
     
@@ -89,6 +90,15 @@ class MapViewController: UIViewController {
         return label
     }()
     
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        configureTabBar()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
 	override func viewDidLoad() {
 		super.viewDidLoad()
         view = mapView
@@ -107,7 +117,6 @@ class MapViewController: UIViewController {
         gesture.minimumPressDuration = 0.2
         mapView.addGestureRecognizer(gesture)
         
-        configureTabBar()
         configureNavigationBar()
         setConstraints()
 	}
@@ -129,11 +138,6 @@ class MapViewController: UIViewController {
         }
     }
     
-    func configureTabBar() {
-        tabBarItem = UITabBarItem(title: nil, image: UIImage(named: "map"), tag: 1)
-        tabBarItem.imageInsets = UIEdgeInsets.init(top: 5, left: 0, bottom: -5, right: 0)
-    }
-    
     func configureNavigationBar() {
         navigationItem.titleView = titleLabel
         
@@ -146,6 +150,11 @@ class MapViewController: UIViewController {
             navigationController?.navigationBar.scrollEdgeAppearance = appearance
             navigationController?.navigationBar.standardAppearance = appearance
         }
+    }
+    
+    func configureTabBar() {
+        tabBarItem = UITabBarItem(title: nil, image: UIImage(named: "map"), tag: 1)
+        tabBarItem.imageInsets = UIEdgeInsets.init(top: 5, left: 0, bottom: -5, right: 0)
     }
     
     @objc func locateButtonTapped() {

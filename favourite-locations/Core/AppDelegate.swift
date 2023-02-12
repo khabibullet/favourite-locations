@@ -15,12 +15,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        let locationsModule = ModuleBuilder.buildLocationsModule()
-        let mapModule = ModuleBuilder.buildMapModule()
-        self.coordinator = ModuleBuilder.buildCoordinator(locationsPresenter: locationsModule, mapPresenter: mapModule)
+        let tabBarController = UITabBarController()
+        coordinator = AppCoordinator(tabBarController: tabBarController)
+        coordinator?.start()
         
         let window = UIWindow(frame: UIScreen.main.bounds)
-        window.rootViewController = coordinator?.tabBarController
+        window.rootViewController = tabBarController
         window.makeKeyAndVisible()
         self.window = window
         

@@ -17,9 +17,11 @@ protocol MapPresenterProtocol: AnyObject {
 }
 
 class MapPresenter: MapPresenterProtocol {
-    var view: MapViewProtocol!
+    
+    unowned var coordinator: CoordinatorProtocol!
+    unowned var view: MapViewProtocol!
+    
     let model: [MapPin]
-    weak var coordinator: CoordinatorProtocol!
     
     var returnCoordinatesToEditor: (((Double, Double)?) -> Void)?
     

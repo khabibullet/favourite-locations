@@ -9,23 +9,25 @@ import Foundation
 import UIKit
 
 protocol LocationsPresenterProtocol: AnyObject {
-    func coordinatesInputInitiated(completionHandler: @escaping ((Double, Double)?) -> Void)
-    func setupEditorForLocation(with index: Int)
-}
-
-protocol LocationsManagerProtocol: AnyObject {
+    func addLocationViaEditor()
+    func editLocationViaEditor(location index: Int)
+    
     func getLocationWithPrefixOnIndex(id: Int) -> Location
     func getNumberOfLocationsWithPrefix() -> Int
     func containsLocation(withName name: String) -> Bool
-    func createLocation(name: String, coordinates: (latitude: Double, longitude: Double), comment: String?)
-    func restoreLocation(name: String, coordinates: (latitude: Double, longitude: Double), comment: String?)
-    func removeLocation(byName name: String)
+    
+    func createLocation(newLocation: Location)
     func removeLocation(at index: Int)
-    func replaceLocation(oldName: String, name: String, coordinates: (latitude: Double, longitude: Double), comment: String?)
+}
+
+enum ActionOnComplete {
+    case create
+    case restore
+    case cancel
 }
 
 class LocationsPresenter {
-    unowned private var locationsView: LocationsViewProtocol
+    unowned var locationsView: LocationsViewProtocol
     unowned var coordinator: CoordinatorProtocol!
     private let persistenceManager: PersistenceStoreManaged
 
@@ -51,17 +53,7 @@ class LocationsPresenter {
 }
 
 extension LocationsPresenter: LocationsPresenterProtocol {
-    func coordinatesInputInitiated(completionHandler: @escaping ((Double, Double)?) -> Void) {
-        coordinator.addMapPin(completionHandler: completionHandler)
-    }
     
-    func setupEditorForLocation(with index: Int) {
-        let location = getLocationWithPrefixOnIndex(id: index)
-        
-    }
-}
-
-extension LocationsPresenter: LocationsManagerProtocol {
     func getLocationWithPrefixOnIndex(id: Int) -> Location {
         return locationsWithPrefix[id]
     }
@@ -74,21 +66,51 @@ extension LocationsPresenter: LocationsManagerProtocol {
         return locations.contains(where: { $0.name == name })
     }
     
-    func createLocation(name: String, coordinates: (latitude: Double, longitude: Double), comment: String?) {
+    func addLocationViaEditor() {
+        coordinator.launchEditor(forLocation: nil, inLocations: locations ) { (action, location) in
+            switch action {
+            case .create:
+                guard let location = location else { return }
+                self.createLocation(newLocation: location)
+            case .cancel, .restore:
+                return
+            }
+        }
+    }
+    
+    func editLocationViaEditor(location index: Int) {
+        let editedLocation = getLocationWithPrefixOnIndex(id: index)
+        let oldName = editedLocation.name
+        coordinator.launchEditor(forLocation: editedLocation, inLocations: locations) { (action, location) in
+            switch action {
+            case .restore:
+                guard let location = location else { return }
+                if location.name == oldName {
+                    self.locationsView.updateLocation(at: index)
+                } else {
+                    self.locations.remove(at: index)
+                    self.locationsView.removeLocation(at: index)
+                    let newID = self.locations.insertIndexInAccending(location)
+                    self.locations.insert(location, at: newID)
+                    self.locationsView.insertLocation(at: newID)
+                }
+                self.persistenceManager.saveContext()
+            case .cancel, .create:
+                return
+            }
+        }
+    }
+    
+    func createLocation(newLocation: Location) {
         let location = Location(context: persistenceManager.viewContext)
-        location.name = name
-        location.latitude = coordinates.latitude
-        location.longitude = coordinates.longitude
-        location.comment = comment
+        location.name = newLocation.name
+        location.latitude = newLocation.latitude
+        location.longitude = newLocation.longitude
+        location.comment = newLocation.comment
         persistenceManager.saveContext()
         let index = locations.insertIndexInAccending(location)
         locations.insert(location, at: index)
         locationsView.insertLocation(at: index)
-    }
-    
-    func removeLocation(byName name: String) {
-        guard let index = locations.firstIndex(where: { $0.name == name }) else { return }
-        removeLocation(at: index)
     }
     
     func removeLocation(at index: Int) {
@@ -96,20 +118,5 @@ extension LocationsPresenter: LocationsManagerProtocol {
         locations.remove(at: index)
         locationsView.removeLocation(at: index)
         persistenceManager.saveContext()
-    }
-    
-    func restoreLocation(name: String, coordinates: (latitude: Double, longitude: Double), comment: String?) {
-        guard let index = locations.firstIndex(where: { $0.name == name }) else { return }
-        let location = locations[index]
-        location.latitude = coordinates.latitude
-        location.longitude = coordinates.longitude
-        location.comment = comment
-        persistenceManager.saveContext()
-        locationsView.updateLocation(at: index)
-    }
-    
-    func replaceLocation(oldName: String, name: String, coordinates: (latitude: Double, longitude: Double), comment: String?) {
-        removeLocation(byName: oldName)
-        createLocation(name: name, coordinates: coordinates, comment: comment)
     }
 }

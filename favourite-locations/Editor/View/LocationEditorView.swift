@@ -10,12 +10,12 @@ import SnapKit
 import CoreData
 
 protocol LocationsEditorProtocol {
-    
+    func configureInitialState()
 }
 
-class LocationEditor: UIViewController, LocationsEditorProtocol {
+class LocationEditorView: UIViewController, LocationsEditorProtocol {
     
-    let presenter: LocationsPresenterProtocol
+    var presenter: LocationEditorPresenterProtocol!
     
     var oldName: String?
     
@@ -26,12 +26,23 @@ class LocationEditor: UIViewController, LocationsEditorProtocol {
         }
     }
     
+    
+    let titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Edit location"
+        label.textColor = .black
+        label.sizeToFit()
+        label.font = UIFont.systemFont(ofSize: 18.0)
+        return label
+    }()
+    
     let scrollView: UIScrollView = {
         let view = UIScrollView()
         view.backgroundColor = .white
         view.isScrollEnabled = true
         view.showsHorizontalScrollIndicator = false
         view.showsVerticalScrollIndicator = false
+        view.backgroundColor = UIColor(named: "mint-light")
         return view
     }()
     
@@ -41,7 +52,7 @@ class LocationEditor: UIViewController, LocationsEditorProtocol {
     
     let nameTextField: CustomTextField = {
         let field = CustomTextField()
-        field.backgroundColor = UIColor(named: "mint-light")
+        field.backgroundColor = .white
         field.layer.cornerRadius = 10
         field.textAlignment = .natural
         field.font = .systemFont(ofSize: 18)
@@ -53,7 +64,6 @@ class LocationEditor: UIViewController, LocationsEditorProtocol {
     let coordinatesTextView: UITextView = {
         let view = UITextView()
         view.placeholder = "Coordinates"
-        view.backgroundColor = UIColor(named: "mint-light")
         view.isUserInteractionEnabled = false
         view.isScrollEnabled = false
         view.layer.cornerRadius = 10
@@ -66,7 +76,6 @@ class LocationEditor: UIViewController, LocationsEditorProtocol {
     let commentTextView: UITextView = {
         let view = UITextView()
         view.placeholder = "Description"
-        view.backgroundColor = UIColor(named: "mint-light")
         view.layer.cornerRadius = 10
         view.textAlignment = .natural
         view.isScrollEnabled = false
@@ -79,7 +88,7 @@ class LocationEditor: UIViewController, LocationsEditorProtocol {
     let locateButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "location-contour"), for: .normal)
-        button.backgroundColor = UIColor(named: "mint-light")
+        button.backgroundColor = .white
         button.layer.cornerRadius = 10
         button.addTarget(self, action: #selector(didTapLocateButton), for: .touchUpInside)
         button.imageView?.contentMode = .scaleAspectFit
@@ -88,81 +97,15 @@ class LocationEditor: UIViewController, LocationsEditorProtocol {
         return button
     }()
     
-    let cancelButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Cancel", for: .normal)
-        button.setTitleColor(UIColor(named: "mint-dark"), for: .normal)
-        button.backgroundColor = .white
-        button.layer.cornerRadius = 10
-        button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor(named: "mint-dark")?.cgColor
-        button.addTarget(self, action: #selector(didTapCancelButton), for: .touchUpInside)
-        button.titleLabel?.font = .systemFont(ofSize: 18)
-        return button
-    }()
-    
-    let saveButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Save", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = UIColor(named: "mint-dark")
-        button.layer.cornerRadius = 10
-        button.addTarget(self, action: #selector(didTapSaveButton), for: .touchUpInside)
-        button.titleLabel?.font = .systemFont(ofSize: 18)
-        return button
-    }()
-    
     let topHStack: UIStackView = {
         let stack = UIStackView()
-        stack.backgroundColor = UIColor(named: "mint-light")
+        stack.backgroundColor = .white
         stack.layer.cornerRadius = 10
         stack.axis = .horizontal
         stack.spacing = 10
         stack.alignment = .fill
         stack.distribution = .fill
         return stack
-    }()
-    
-    let bottomHStack: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .horizontal
-        stack.spacing = 10
-        stack.alignment = .fill
-        stack.distribution = .fillEqually
-        return stack
-    }()
-    
-    let nameAmbiguityErrorLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Please, enter name."
-        label.textColor = .red
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.font = .systemFont(ofSize: 12)
-        label.isHidden = true
-        return label
-    }()
-    
-    let nameBusyErrorLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Location with this name already exists."
-        label.textColor = .red
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.font = .systemFont(ofSize: 12)
-        label.isHidden = true
-        return label
-    }()
-    
-    let coordinatesAmbiguityErrorLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Please, set coordinates."
-        label.textColor = .red
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.font = .systemFont(ofSize: 12)
-        label.isHidden = true
-        return label
     }()
     
     let vStack: UIStackView = {
@@ -174,26 +117,10 @@ class LocationEditor: UIViewController, LocationsEditorProtocol {
         return stack
     }()
     
-    init(presenter: LocationsPresenterProtocol) {
-        self.presenter = presenter
-        super.init(nibName: nil, bundle: nil)
-    }
+    let nameAmbiguityErrorLabel = ErrorLabel(text: "Please, enter name.")
+    let nameBusyErrorLabel = ErrorLabel(text: "Location with this name already exists.")
+    let coordinatesAmbiguityErrorLabel = ErrorLabel(text: "Please, set coordinates.")
     
-    init(presenter: LocationsPresenterProtocol, location: Location) {
-        self.presenter = presenter
-        self.nameTextField.text = location.name
-        self.oldName = location.name
-        self.coordinates = (location.latitude, location.longitude)
-        self.coordinatesTextView.text = Location.coordinatesString(location.latitude, location.longitude)
-        self.coordinatesTextView.hidePlaceholder()
-        self.commentTextView.text = location.comment
-        self.commentTextView.hidePlaceholder()
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -205,16 +132,12 @@ class LocationEditor: UIViewController, LocationsEditorProtocol {
         
         topHStack.addArrangedSubview(coordinatesTextView)
         topHStack.addArrangedSubview(locateButton)
-        bottomHStack.addArrangedSubview(cancelButton)
-        bottomHStack.addArrangedSubview(saveButton)
-        vStack.addArrangedSubview(titleLabel)
         vStack.addArrangedSubview(nameTextField)
         vStack.addArrangedSubview(nameAmbiguityErrorLabel)
         vStack.addArrangedSubview(nameBusyErrorLabel)
         vStack.addArrangedSubview(topHStack)
         vStack.addArrangedSubview(coordinatesAmbiguityErrorLabel)
         vStack.addArrangedSubview(commentTextView)
-        vStack.addArrangedSubview(bottomHStack)
         contentView.addSubview(vStack)
         scrollView.addSubview(contentView)
         view.addSubview(scrollView)
@@ -224,6 +147,7 @@ class LocationEditor: UIViewController, LocationsEditorProtocol {
         
         NotificationCenter.default.addObserver(self, selector: #selector(kbWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         
+        configureNavigationBar()
         setConstraints()
     }
     
@@ -232,9 +156,6 @@ class LocationEditor: UIViewController, LocationsEditorProtocol {
     }
     
     func setConstraints() {
-        vStack.setCustomSpacing(35, after: titleLabel)
-        vStack.setCustomSpacing(25, after: bottomHStack)
-        
         scrollView.snp.makeConstraints {
             $0.edges.equalTo(view.safeAreaLayoutGuide.snp.edges)
         }
@@ -245,10 +166,16 @@ class LocationEditor: UIViewController, LocationsEditorProtocol {
         }
         
         vStack.snp.makeConstraints {
-            $0.verticalEdges.equalToSuperview().inset(40)
+            $0.verticalEdges.equalToSuperview().inset(50)
             $0.width.equalToSuperview().dividedBy(1.5)
             $0.centerX.equalToSuperview()
         }
+    }
+    
+    func configureNavigationBar() {
+        navigationItem.titleView = titleLabel
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didTapCancelButton))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(didTapSaveButton))
     }
     
     var activeSubview: UIView?
@@ -256,7 +183,7 @@ class LocationEditor: UIViewController, LocationsEditorProtocol {
     
     func manageContentOffset() {
         guard let activeSubview = activeSubview, let keyboardHeight = keyboardHeight else { return }
-        let bottomY = activeSubview === commentTextView ? bottomHStack.frame.maxY : activeSubview.frame.maxY
+        let bottomY = activeSubview.frame.maxY
         let bottom = vStack.frame.origin.y + bottomY + 10
         let visibleAreaHeight = view.frame.height - keyboardHeight
         let offset = bottom - visibleAreaHeight
@@ -315,17 +242,26 @@ class LocationEditor: UIViewController, LocationsEditorProtocol {
         }
     }
     
-    @objc func didTapSaveButton() {
-        guard let name = nameTextField.text else { return }
-        let comment = commentTextView.text
-        if editMode == .edit, let coordinates = coordinates {
-            editLocation(name: name, coordinates: coordinates, comment: comment)
-        } else {
-            createLocation(name: name, coordinates: coordinates, comment: comment)
+    func configureInitialState() {
+        guard let location = presenter.getLocation() else {
+            titleLabel.text = "Add location"
+            return
         }
+        oldName = location.name
+        coordinates = (location.latitude, location.longitude)
+        nameTextField.text = location.name
+        commentTextView.text = location.comment
+        coordinatesTextView.hidePlaceholder()
+        commentTextView.hidePlaceholder()
+    }
+    
+    @objc func didTapSaveButton() {
+        let location = Location()
+        presenter.complete(resultAction: .create, location: location)
     }
     
     @objc func didTapCancelButton() {
+        presenter.complete(resultAction: .cancel, location: nil)
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -337,7 +273,7 @@ class LocationEditor: UIViewController, LocationsEditorProtocol {
     }
 }
 
-extension LocationEditor: UITextFieldDelegate {
+extension LocationEditorView: UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let oldStr: NSString = (textField.text ?? "") as NSString
@@ -349,7 +285,7 @@ extension LocationEditor: UITextFieldDelegate {
         }
         
         let newStr: NSString =  oldStr.replacingCharacters(in: range, with: string) as NSString
-        return newStr.length <= 6
+        return newStr.length <= 30
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -357,7 +293,7 @@ extension LocationEditor: UITextFieldDelegate {
     }
 }
 
-extension LocationEditor: UITextViewDelegate {
+extension LocationEditorView: UITextViewDelegate {
     
     
     func textViewDidChange(_ textView: UITextView) {
@@ -372,7 +308,7 @@ extension LocationEditor: UITextViewDelegate {
     }
 }
 
-extension LocationEditor: NSLayoutManagerDelegate {
+extension LocationEditorView: NSLayoutManagerDelegate {
     
     func layoutManager(_ layoutManager: NSLayoutManager, didCompleteLayoutFor textContainer: NSTextContainer?, atEnd layoutFinishedFlag: Bool) {
         manageContentOffset()

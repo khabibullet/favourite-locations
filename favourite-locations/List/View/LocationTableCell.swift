@@ -74,14 +74,16 @@ class LocationTableCell: UITableViewCell {
         stack.spacing = 10
         stack.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         stack.isLayoutMarginsRelativeArrangement = true
-        stack.backgroundColor = UIColor(named: "mint-extra-light")
+        stack.backgroundColor = .white
         stack.layer.cornerRadius = 10
+        stack.backgroundColor = UIColor(named: "mint-extra-light")
         return stack
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
+        contentView.backgroundColor = .white
         
         hStack.addArrangedSubview(title)
         hStack.addArrangedSubview(arrowButton)

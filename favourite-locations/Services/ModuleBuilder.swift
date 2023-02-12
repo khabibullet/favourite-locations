@@ -12,44 +12,47 @@ protocol Builder {
 }
 
 class ModuleBuilder: Builder {
-    static func buildLocationsModule() -> LocationsPresenterProtocol {
+    static func buildLocationsModule() -> (LocationsViewProtocol, LocationsPresenterProtocol) {
         
         let dataModelName = "LocationsDataModel"
         let persistenceManager = PersistenceManager(dataModelName: dataModelName)
-        let view = LocationsViewController()
+        
         let model: [Location] = []
+        let view = LocationsViewController()
         let presenter = LocationsPresenter(view: view, model: model, persistenceManager: persistenceManager)
+        
         view.presenter = presenter
-        return presenter
+        
+        return (view, presenter)
     }
     
-    static func buildMapModule() -> MapPresenterProtocol {
+    static func buildMapModule() -> (MapViewProtocol, MapPresenterProtocol) {
         
-        let view = MapViewController()
         let model: [MapPin] = []
+        let view = MapViewController()
         let presenter = MapPresenter(view: view, model: model)
-        view.presenter = presenter
-        return presenter
-    }
-    
-    static func buildEditorModule() -> LocationEditorPresenterProtocol {
         
-        let view = 
+        view.presenter = presenter
+        
+        return (view, presenter)
     }
     
-    static func buildCoordinator(locationsPresenter: LocationsPresenterProtocol, mapPresenter: MapPresenterProtocol) -> CoordinatorProtocol {
-        let tabBarController = UITabBarController()
-        if let locationsView = locationsPresenter.view as? UIViewController {
-            let navigationController = UINavigationController(rootViewController: locationsView)
-            tabBarController.addChild(navigationController)
-        }
-        if let mapView = mapPresenter.view as? UIViewController {
-            let navigationController = UINavigationController(rootViewController: mapView)
-            tabBarController.addChild(navigationController)
-        }
-        let coordinator = LocationsCoordinator(locationsPresenter: locationsPresenter, mapPresenter: mapPresenter, tabBarController: tabBarController)
-        locationsPresenter.coordinator = coordinator
-        mapPresenter.coordinator = coordinator
-        return coordinator
+    static func buildEditorModule(
+        forLocation location: Location?,
+        inLocations locations: [Location],
+        withCompletion completion: @escaping ((ActionOnComplete, Location?) -> Void)
+    ) -> (LocationsEditorProtocol, LocationEditorPresenterProtocol) {
+        let model = locations
+        let view = LocationEditorView()
+        let presenter = LocationEditorPresenter(
+            view: view,
+            model: model,
+            entity: location,
+            completion: completion
+        )
+        
+        view.presenter = presenter
+        
+        return (view, presenter)
     }
 }

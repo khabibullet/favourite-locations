@@ -15,11 +15,12 @@
 		3F68CDFA29634A6A00FB0F0B /* LocationTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F68CDF929634A6A00FB0F0B /* LocationTableCell.swift */; };
 		3F7D4F86296493C0009CB727 /* UISearchBar+TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7D4F85296493C0009CB727 /* UISearchBar+TextField.swift */; };
 		3F8358CF296475B100283531 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8358CE296475B100283531 /* Location.swift */; };
-		3F96441B295F730400E04D65 /* LocationsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F96441A295F730400E04D65 /* LocationsCoordinator.swift */; };
+		3F96441B295F730400E04D65 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F96441A295F730400E04D65 /* AppCoordinator.swift */; };
 		3F964421295F79CA00E04D65 /* MapPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F964420295F79CA00E04D65 /* MapPresenter.swift */; };
 		3F9FD5AA296DAC26006DA4AC /* Array+InsertInAccending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9FD5A9296DAC26006DA4AC /* Array+InsertInAccending.swift */; };
 		3FBCD1DE298572330088A840 /* LocationEditorPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBCD1DD298572330088A840 /* LocationEditorPresenter.swift */; };
-		3FBE9DBB295DFFFB0055AECA /* LocationEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBE9DBA295DFFFB0055AECA /* LocationEditor.swift */; };
+		3FBE9DBB295DFFFB0055AECA /* LocationEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBE9DBA295DFFFB0055AECA /* LocationEditorView.swift */; };
+		3FBFAA2B29993D5300669854 /* ErrorLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBFAA2A29993D5200669854 /* ErrorLabel.swift */; };
 		3FE030B7295F2F9A00EDC03C /* ModuleBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FE030B6295F2F9A00EDC03C /* ModuleBuilder.swift */; };
 		3FE030C0295F37D200EDC03C /* LocationsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FE030BF295F37D200EDC03C /* LocationsPresenter.swift */; };
 		3FE737F42960D1EA008C890A /* LocationsDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 3FE737F22960D1EA008C890A /* LocationsDataModel.xcdatamodeld */; };
@@ -41,11 +42,12 @@
 		3F68CDF929634A6A00FB0F0B /* LocationTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTableCell.swift; sourceTree = "<group>"; };
 		3F7D4F85296493C0009CB727 /* UISearchBar+TextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UISearchBar+TextField.swift"; sourceTree = "<group>"; };
 		3F8358CE296475B100283531 /* Location.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
-		3F96441A295F730400E04D65 /* LocationsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationsCoordinator.swift; sourceTree = "<group>"; };
+		3F96441A295F730400E04D65 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		3F964420295F79CA00E04D65 /* MapPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPresenter.swift; sourceTree = "<group>"; };
 		3F9FD5A9296DAC26006DA4AC /* Array+InsertInAccending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+InsertInAccending.swift"; sourceTree = "<group>"; };
 		3FBCD1DD298572330088A840 /* LocationEditorPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationEditorPresenter.swift; sourceTree = "<group>"; };
-		3FBE9DBA295DFFFB0055AECA /* LocationEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationEditor.swift; sourceTree = "<group>"; };
+		3FBE9DBA295DFFFB0055AECA /* LocationEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationEditorView.swift; sourceTree = "<group>"; };
+		3FBFAA2A29993D5200669854 /* ErrorLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorLabel.swift; sourceTree = "<group>"; };
 		3FE030B6295F2F9A00EDC03C /* ModuleBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleBuilder.swift; sourceTree = "<group>"; };
 		3FE030BF295F37D200EDC03C /* LocationsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationsPresenter.swift; sourceTree = "<group>"; };
 		3FE737F32960D1EA008C890A /* LocationsDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LocationsDataModel.xcdatamodel; sourceTree = "<group>"; };
@@ -118,7 +120,7 @@
 		3F96441C295F730D00E04D65 /* Coordinator */ = {
 			isa = PBXGroup;
 			children = (
-				3F96441A295F730400E04D65 /* LocationsCoordinator.swift */,
+				3F96441A295F730400E04D65 /* AppCoordinator.swift */,
 			);
 			path = Coordinator;
 			sourceTree = "<group>";
@@ -143,9 +145,10 @@
 		3FBCD1DB298570D90088A840 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				3FBE9DBA295DFFFB0055AECA /* LocationEditor.swift */,
+				3FBE9DBA295DFFFB0055AECA /* LocationEditorView.swift */,
 				3F246A2D297DB8690060F20C /* UITextView+Placeholder.swift */,
 				3F543AE02978751D003C4BA0 /* CustomTextField.swift */,
+				3FBFAA2A29993D5200669854 /* ErrorLabel.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -400,14 +403,15 @@
 				4118127228AE9383008ED400 /* MapPin.swift in Sources */,
 				3F7D4F86296493C0009CB727 /* UISearchBar+TextField.swift in Sources */,
 				3F68CDFA29634A6A00FB0F0B /* LocationTableCell.swift in Sources */,
-				3F96441B295F730400E04D65 /* LocationsCoordinator.swift in Sources */,
-				3FBE9DBB295DFFFB0055AECA /* LocationEditor.swift in Sources */,
+				3F96441B295F730400E04D65 /* AppCoordinator.swift in Sources */,
+				3FBE9DBB295DFFFB0055AECA /* LocationEditorView.swift in Sources */,
 				3F543AE12978751E003C4BA0 /* CustomTextField.swift in Sources */,
 				3F8358CF296475B100283531 /* Location.swift in Sources */,
 				4118125828AE8321008ED400 /* AppDelegate.swift in Sources */,
 				3FE030B7295F2F9A00EDC03C /* ModuleBuilder.swift in Sources */,
 				3FBCD1DE298572330088A840 /* LocationEditorPresenter.swift in Sources */,
 				3F964421295F79CA00E04D65 /* MapPresenter.swift in Sources */,
+				3FBFAA2B29993D5300669854 /* ErrorLabel.swift in Sources */,
 				3FE030C0295F37D200EDC03C /* LocationsPresenter.swift in Sources */,
 				3FE737F42960D1EA008C890A /* LocationsDataModel.xcdatamodeld in Sources */,
 				4118126E28AE8874008ED400 /* MapViewController.swift in Sources */,
