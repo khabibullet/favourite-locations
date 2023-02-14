@@ -22,6 +22,8 @@ class LocationEditorView: UIViewController, LocationsEditorProtocol {
     var coordinates: (latitude: Double, longitude: Double)? {
         didSet {
             guard let coordinates = coordinates else { return }
+            coordinatesTextView.hidePlaceholder()
+            coordinatesAmbiguityErrorLabel.isHidden = true
             coordinatesTextView.text = Location.coordinatesString(coordinates.latitude, coordinates.longitude)
         }
     }
@@ -38,11 +40,10 @@ class LocationEditorView: UIViewController, LocationsEditorProtocol {
     
     let scrollView: UIScrollView = {
         let view = UIScrollView()
-        view.backgroundColor = .white
         view.isScrollEnabled = true
         view.showsHorizontalScrollIndicator = false
         view.showsVerticalScrollIndicator = false
-        view.backgroundColor = UIColor(named: "mint-light")
+        view.backgroundColor = UIColor(named: "mint-light-2")
         return view
     }()
     
@@ -155,6 +156,11 @@ class LocationEditorView: UIViewController, LocationsEditorProtocol {
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
+    }
+    
     func setConstraints() {
         scrollView.snp.makeConstraints {
             $0.edges.equalTo(view.safeAreaLayoutGuide.snp.edges)
@@ -166,7 +172,7 @@ class LocationEditorView: UIViewController, LocationsEditorProtocol {
         }
         
         vStack.snp.makeConstraints {
-            $0.verticalEdges.equalToSuperview().inset(50)
+            $0.verticalEdges.equalToSuperview().inset(20)
             $0.width.equalToSuperview().dividedBy(1.5)
             $0.centerX.equalToSuperview()
         }
@@ -182,11 +188,17 @@ class LocationEditorView: UIViewController, LocationsEditorProtocol {
     var keyboardHeight: CGFloat?
     
     func manageContentOffset() {
-        guard let activeSubview = activeSubview, let keyboardHeight = keyboardHeight else { return }
-        let bottomY = activeSubview.frame.maxY
-        let bottom = vStack.frame.origin.y + bottomY + 10
-        let visibleAreaHeight = view.frame.height - keyboardHeight
-        let offset = bottom - visibleAreaHeight
+        guard
+            let activeSubview = activeSubview,
+            let keyboardHeight = keyboardHeight
+        else { return }
+        var offset = 0.0
+        if activeSubview === commentTextView {
+            let bottomY = activeSubview.frame.maxY
+            let bottom = vStack.frame.origin.y + bottomY - 10
+            let visibleAreaHeight = view.safeAreaLayoutGuide.layoutFrame.height - keyboardHeight
+            offset = bottom - visibleAreaHeight
+        }
         UIView.animate(withDuration: 0.3) {
             self.scrollView.contentInset = UIEdgeInsets(top: -offset, left: 0, bottom: 0, right: 0)
         }
@@ -207,30 +219,38 @@ class LocationEditorView: UIViewController, LocationsEditorProtocol {
         }
     }
 
-    func editLocation(name: String, coordinates: (latitude: Double, longitude: Double), comment: String?) {
-        guard let oldName = oldName else { return }
-        if name == oldName {
-            presenter.restoreLocation(name: name, coordinates: coordinates, comment: comment)
-            self.dismiss(animated: true, completion: nil)
-        } else if name.isEmpty {
+    func editLocation() {
+        let name = nameTextField.text ?? ""
+        if name.isEmpty {
             nameAmbiguityErrorLabel.isHidden = false
-        } else if presenter.containsLocation(withName: name) {
+        } else if oldName != name, presenter.containsLocation(withName: name) {
             nameBusyErrorLabel.isHidden = false
         } else {
-            presenter.replaceLocation(oldName: oldName, name: name, coordinates: coordinates, comment: comment)
-            self.dismiss(animated: true, completion: nil)
+            presenter.updateEditedLocation(
+                latitude: coordinates?.latitude ?? 0.0,
+                longitude: coordinates?.longitude ?? 0.0,
+                comment: commentTextView.text
+            )
+            self.navigationController?.popViewController(animated: true)
         }
     }
     
-    func createLocation(name: String, coordinates: (latitude: Double, longitude: Double)?, comment: String?) {
+    func createLocation() {
+        let name = nameTextField.text ?? ""
         if let coordinates = coordinates {
             if name.isEmpty {
                 nameAmbiguityErrorLabel.isHidden = false
             } else if presenter.containsLocation(withName: name) {
                 nameBusyErrorLabel.isHidden = false
             } else {
-                presenter.createLocation(name: name, coordinates: coordinates, comment: comment)
-                self.dismiss(animated: true, completion: nil)
+                let locationAdapter = LocationAdapter(
+                    name: name,
+                    latitude: coordinates.latitude,
+                    longitude: coordinates.longitude,
+                    comment: commentTextView.text
+                )
+                presenter.createLocation(with: locationAdapter)
+                self.navigationController?.popViewController(animated: true)
             }
         } else {
             coordinatesAmbiguityErrorLabel.isHidden = false
@@ -239,6 +259,25 @@ class LocationEditorView: UIViewController, LocationsEditorProtocol {
             } else if presenter.containsLocation(withName: name) {
                 nameBusyErrorLabel.isHidden = false
             }
+        }
+    }
+    
+    @objc func didTapSaveButton() {
+        if oldName != nil {
+            editLocation()
+        } else {
+            createLocation()
+        }
+    }
+    
+    @objc func didTapCancelButton() {
+        presenter.cancelEditing()
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    @objc func didTapLocateButton() {
+        presenter.coordinatesSettingInitiated { (latitude, longitude) in
+            self.coordinates = (latitude, longitude)
         }
     }
     
@@ -253,23 +292,6 @@ class LocationEditorView: UIViewController, LocationsEditorProtocol {
         commentTextView.text = location.comment
         coordinatesTextView.hidePlaceholder()
         commentTextView.hidePlaceholder()
-    }
-    
-    @objc func didTapSaveButton() {
-        let location = Location()
-        presenter.complete(resultAction: .create, location: location)
-    }
-    
-    @objc func didTapCancelButton() {
-        presenter.complete(resultAction: .cancel, location: nil)
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    @objc func didTapLocateButton() {
-        presenter.coordinatesInputInitiated { coordinates in
-            guard let coordinates = coordinates else { return }
-            self.coordinates = coordinates
-        }
     }
 }
 

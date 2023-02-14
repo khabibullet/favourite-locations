@@ -6,19 +6,19 @@
 //
 
 import UIKit
+import MapKit
 
 protocol CoordinatorProtocol: AnyObject {
     func start()
     func launchEditor(
         forLocation location: Location?,
         inLocations locations: [Location],
-        withCompletion completion: @escaping (ActionOnComplete, Location?) -> Void
+        withCompletion completion: @escaping (ActionOnComplete, LocationAdapter?) -> Void
     )
-    func showMapInEditMode()
-    func showMapInPresentationMode()
+    func showMapInEditMode(completion: @escaping (Double, Double) -> Void)
 }
 
-class AppCoordinator {
+class AppCoordinator: NSObject {
     let tabBarController: UITabBarController
     var locationsPresenter: LocationsPresenterProtocol!
     var mapPresenter: MapPresenterProtocol!
@@ -31,13 +31,17 @@ class AppCoordinator {
 
 
 extension AppCoordinator: CoordinatorProtocol {
+    
     func launchEditor(
         forLocation location: Location?,
         inLocations locations: [Location],
-        withCompletion completion: @escaping (ActionOnComplete, Location?) -> Void
+        withCompletion completion: @escaping (ActionOnComplete, LocationAdapter?) -> Void
     ) {
         let (editor, _) = ModuleBuilder.buildEditorModule(
-            forLocation: location, inLocations: locations, withCompletion: completion
+            forLocation: location,
+            inLocations: locations,
+            withCompletion: completion,
+            coordinator: self
         )
         editor.configureInitialState()
         guard let editor = editor as? UIViewController else { return }
@@ -45,8 +49,8 @@ extension AppCoordinator: CoordinatorProtocol {
     }
     
     func start() {
-        let (locationsView, locationsPresenter) = ModuleBuilder.buildLocationsModule()
-        let (mapView, mapPresenter) = ModuleBuilder.buildMapModule()
+        let (locationsView, locationsPresenter) = ModuleBuilder.buildLocationsModule(coordinator: self)
+        let (mapView, mapPresenter) = ModuleBuilder.buildMapModule(coordinator: self)
         
         guard
             let mapView = mapView as? UIViewController,
@@ -55,18 +59,31 @@ extension AppCoordinator: CoordinatorProtocol {
         
         let navController = UINavigationController(rootViewController: locationsView)
         
-        tabBarController.setViewControllers([navController, mapView], animated: false)
+        tabBarController.setViewControllers([navController, mapView], animated: true)
         
         self.locationsPresenter = locationsPresenter
         self.mapPresenter = mapPresenter
         self.locationNavigationController = navController
     }
     
-    func showMapInEditMode() {
-        
+    func showMapInEditMode(completion: @escaping (Double, Double) -> Void) {
+        let mapView = MapViewController()
+        mapView.completion = completion
+        mapView.setupEditMode()
+        locationNavigationController.pushViewController(mapView, animated: true)
+    }
+}
+
+extension AppCoordinator: UITabBarControllerDelegate {
+    
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+
+        guard viewController is MapViewController else { return true }
+        let locations = locationsPresenter.getLocations()
+        let annotations = locations.map({ MKPointAnnotation(location: $0) })
+        mapPresenter.setAnnotations(pins: annotations)
+
+        return true
     }
     
-    func showMapInPresentationMode() {
-        
-    }
 }

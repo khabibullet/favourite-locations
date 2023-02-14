@@ -6,14 +6,12 @@
 //
 
 import Foundation
+import MapKit
 
 
 protocol MapPresenterProtocol: AnyObject {
     var view: MapViewProtocol! { get }
-    var coordinator: CoordinatorProtocol! { get set }
-    func addMapPin(completionHandler: @escaping ((Double, Double)?) -> Void)
-    func cancelPinAdding()
-    func didAddPin(with coordinates: (Double, Double))
+    func setAnnotations(pins: [MKPointAnnotation])
 }
 
 class MapPresenter: MapPresenterProtocol {
@@ -21,28 +19,16 @@ class MapPresenter: MapPresenterProtocol {
     unowned var coordinator: CoordinatorProtocol!
     unowned var view: MapViewProtocol!
     
-    let model: [MapPin]
+    var model: [MKPointAnnotation]
     
-    var returnCoordinatesToEditor: (((Double, Double)?) -> Void)?
-    
-    init(view: MapViewProtocol, model: [MapPin]) {
+    init(view: MapViewProtocol, model: [MKPointAnnotation], coordinator: CoordinatorProtocol) {
         self.view = view
         self.model = model
+        self.coordinator = coordinator
     }
     
-    func addMapPin(completionHandler: @escaping ((Double, Double)?) -> Void) {
-        returnCoordinatesToEditor = completionHandler
-        view.setupEditMode()
-    }
-    
-    func cancelPinAdding() {
-        returnCoordinatesToEditor?(nil)
-        returnCoordinatesToEditor = nil
-    }
-    
-    func didAddPin(with coordinates: (Double, Double)) {
-        returnCoordinatesToEditor?(coordinates)
-        returnCoordinatesToEditor = nil
-        coordinator.didAddPin()
+    func setAnnotations(pins: [MKPointAnnotation]) {
+        model = pins
+        view.replaceAnnotations(with: model)
     }
 }

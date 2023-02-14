@@ -10,28 +10,34 @@ import Foundation
 protocol LocationEditorPresenterProtocol: AnyObject {
     func getLocation() -> Location?
     func containsLocation(withName name: String) -> Bool
-    func complete(resultAction: ActionOnComplete, location: Location?)
+    func updateEditedLocation(latitude: Double, longitude: Double, comment: String?)
+    func cancelEditing()
+    func createLocation(with adapter: LocationAdapter)
+    func coordinatesSettingInitiated(completion: @escaping (Double, Double) -> Void)
 }
 
 class LocationEditorPresenter: LocationEditorPresenterProtocol {
     
     let editorView: LocationsEditorProtocol
-    let editedLocation: Location?
-    let locations: [Location]
     unowned var coordinator: CoordinatorProtocol!
     
-    var editCompletion: ((ActionOnComplete, Location?) -> Void)
+    let editedLocation: Location?
+    let locations: [Location]
+    
+    var editCompletion: ((ActionOnComplete, LocationAdapter?) -> Void)
     
     init(
         view: LocationsEditorProtocol,
         model: [Location],
         entity: Location?,
-        completion: @escaping ((ActionOnComplete, Location?) -> Void)
+        completion: @escaping ((ActionOnComplete, LocationAdapter?) -> Void),
+        coordinator: CoordinatorProtocol
     ) {
         self.editorView = view
         self.locations = model
         self.editedLocation = entity
         self.editCompletion = completion
+        self.coordinator = coordinator
     }
     
     func getLocation() -> Location? {
@@ -42,7 +48,25 @@ class LocationEditorPresenter: LocationEditorPresenterProtocol {
         return locations.contains(where: { $0.name == name })
     }
     
-    func complete(resultAction: ActionOnComplete, location: Location?) {
-        
+    func updateEditedLocation(latitude: Double, longitude: Double, comment: String?) {
+        guard let editedLocation = editedLocation else {
+            return
+        }
+        editedLocation.latitude = latitude
+        editedLocation.longitude = longitude
+        editedLocation.comment = comment
+        editCompletion(.restore, nil)
+    }
+    
+    func cancelEditing() {
+        editCompletion(.cancel, nil)
+    }
+    
+    func createLocation(with adapter: LocationAdapter) {
+        editCompletion(.create, adapter)
+    }
+    
+    func coordinatesSettingInitiated(completion: @escaping (Double, Double) -> Void) {
+        coordinator.showMapInEditMode(completion: completion)
     }
 }

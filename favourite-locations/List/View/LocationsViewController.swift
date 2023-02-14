@@ -65,6 +65,7 @@ class LocationsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
 		view.addSubview(locationsTable)
         
         locationsTable.delegate = self
@@ -76,6 +77,11 @@ class LocationsViewController: UIViewController {
         configureTabBar()
         
         setConstraints()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
 	
     func setConstraints() {
@@ -113,6 +119,7 @@ class LocationsViewController: UIViewController {
     }
     
     @objc func didTapAddButton() {
+        presenter.addLocationViaEditor()
     }
 }
 

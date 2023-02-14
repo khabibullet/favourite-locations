@@ -9,19 +9,14 @@ import UIKit
 import MapKit
 import CoreLocation
 
-enum MapViewMode {
-    case addPin
-    case showPins
-}
-
 protocol MapViewProtocol: AnyObject {
-    func setupEditMode()
+    func replaceAnnotations(with newAnnotations: [MKPointAnnotation])
 }
 
 class MapViewController: UIViewController {
     
     var presenter: MapPresenterProtocol!
-	
+    var completion: ((Double, Double) -> Void)?
     var selectedPin: MKPointAnnotation?
     
     let mapView: MKMapView = {
@@ -49,6 +44,7 @@ class MapViewController: UIViewController {
         let button = UIButton()
         button.setImage(UIImage(named: "location"), for: .normal)
         button.addTarget(self, action: #selector(locateButtonTapped), for: .touchUpInside)
+        button.contentMode = .scaleAspectFit
         return button
     }()
     
@@ -112,10 +108,6 @@ class MapViewController: UIViewController {
         mapView.addSubview(trackingButton)
         mapView.addSubview(segmentedBar)
         mapView.addSubview(pinAmbiguityLabel)
-		
-        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressInitiated))
-        gesture.minimumPressDuration = 0.2
-        mapView.addGestureRecognizer(gesture)
         
         configureNavigationBar()
         setConstraints()
@@ -123,8 +115,8 @@ class MapViewController: UIViewController {
     
     func setConstraints() {
         trackingButton.snp.makeConstraints {
-            $0.centerY.equalTo(segmentedBar.snp.centerY)
-            $0.leading.equalTo(segmentedBar.snp.trailing).offset(20)
+            $0.verticalEdges.equalTo(segmentedBar.snp.verticalEdges)
+            $0.leading.equalTo(segmentedBar.snp.trailing).offset(10)
         }
         segmentedBar.snp.makeConstraints {
             $0.centerX.equalToSuperview()
@@ -165,7 +157,7 @@ class MapViewController: UIViewController {
         }
     }
     
-    @objc func longPressInitiated(_ gestureRecognizer: UIGestureRecognizer) {
+    @objc func tapInitiated(_ gestureRecognizer: UIGestureRecognizer) {
         if let previous = selectedPin {
             mapView.removeAnnotation(previous)
         }
@@ -178,7 +170,8 @@ class MapViewController: UIViewController {
     }
     
     @objc func cancelButtonTapped() {
-        presenter.cancelPinAdding()
+        mapView.removeAnnotations(mapView.annotations)
+        navigationController?.popViewController(animated: true)
     }
     
     @objc func saveButtonTapped() {
@@ -191,7 +184,9 @@ class MapViewController: UIViewController {
         }
         let latitude = Double(coordinates.latitude)
         let longitude = Double(coordinates.longitude)
-        presenter.didAddPin(with: (latitude, longitude))
+        completion?(latitude, longitude)
+        mapView.removeAnnotations(mapView.annotations)
+        navigationController?.popViewController(animated: true)
     }
     
     @objc func changeMapType(_ segmentedControl: UISegmentedControl) {
@@ -213,11 +208,29 @@ extension MapViewController: MapViewProtocol {
     func setupEditMode() {
         navigationItem.rightBarButtonItem = saveButton
         navigationItem.leftBarButtonItem = cancelButton
-        titleLabel.text = "Please, put pin"
+        titleLabel.text = "Please, locate pin"
+        if let previous = selectedPin {
+            mapView.removeAnnotation(previous)
+            selectedPin = nil
+        }
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(tapInitiated))
+        mapView.addGestureRecognizer(gesture)
+        
     }
     
-    func setupShowMode() {
-        
+    func setupPresentationMode() {
+        navigationItem.rightBarButtonItem = nil
+        navigationItem.leftBarButtonItem = nil
+        titleLabel.text = "Locations"
+        if let previous = selectedPin {
+            mapView.removeAnnotation(previous)
+            selectedPin = nil
+        }
+    }
+    
+    func replaceAnnotations(with newAnnotations: [MKPointAnnotation]) {
+        mapView.removeAnnotations(mapView.annotations)
+        mapView.addAnnotations(newAnnotations)
     }
 }
 

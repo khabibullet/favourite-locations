@@ -15,8 +15,9 @@ protocol LocationsPresenterProtocol: AnyObject {
     func getLocationWithPrefixOnIndex(id: Int) -> Location
     func getNumberOfLocationsWithPrefix() -> Int
     func containsLocation(withName name: String) -> Bool
+    func getLocations() -> [Location]
     
-    func createLocation(newLocation: Location)
+    func createLocation(newLocation: LocationAdapter)
     func removeLocation(at index: Int)
 }
 
@@ -38,10 +39,16 @@ class LocationsPresenter {
         return locations.filter { $0.name.hasPrefix(searchKey) }
     }
     
-    init(view: LocationsViewProtocol, model: [Location], persistenceManager: PersistenceStoreManaged) {
+    init(
+        view: LocationsViewProtocol,
+        model: [Location],
+        persistenceManager: PersistenceStoreManaged,
+        coordinator: CoordinatorProtocol
+    ) {
         self.locationsView = view
         self.locations = model
         self.persistenceManager = persistenceManager
+        self.coordinator = coordinator
         fetchLocations()
     }
     
@@ -53,6 +60,7 @@ class LocationsPresenter {
 }
 
 extension LocationsPresenter: LocationsPresenterProtocol {
+    
     
     func getLocationWithPrefixOnIndex(id: Int) -> Location {
         return locationsWithPrefix[id]
@@ -66,8 +74,12 @@ extension LocationsPresenter: LocationsPresenterProtocol {
         return locations.contains(where: { $0.name == name })
     }
     
+    func getLocations() -> [Location] {
+        return locationsWithPrefix
+    }
+    
     func addLocationViaEditor() {
-        coordinator.launchEditor(forLocation: nil, inLocations: locations ) { (action, location) in
+        coordinator.launchEditor(forLocation: nil, inLocations: locations) { (action, location) in
             switch action {
             case .create:
                 guard let location = location else { return }
@@ -81,17 +93,16 @@ extension LocationsPresenter: LocationsPresenterProtocol {
     func editLocationViaEditor(location index: Int) {
         let editedLocation = getLocationWithPrefixOnIndex(id: index)
         let oldName = editedLocation.name
-        coordinator.launchEditor(forLocation: editedLocation, inLocations: locations) { (action, location) in
+        coordinator.launchEditor(forLocation: editedLocation, inLocations: locations) { (action, _) in
             switch action {
             case .restore:
-                guard let location = location else { return }
-                if location.name == oldName {
+                if editedLocation.name == oldName {
                     self.locationsView.updateLocation(at: index)
                 } else {
                     self.locations.remove(at: index)
                     self.locationsView.removeLocation(at: index)
-                    let newID = self.locations.insertIndexInAccending(location)
-                    self.locations.insert(location, at: newID)
+                    let newID = self.locations.insertIndexInAccending(editedLocation)
+                    self.locations.insert(editedLocation, at: newID)
                     self.locationsView.insertLocation(at: newID)
                 }
                 self.persistenceManager.saveContext()
@@ -101,7 +112,7 @@ extension LocationsPresenter: LocationsPresenterProtocol {
         }
     }
     
-    func createLocation(newLocation: Location) {
+    func createLocation(newLocation: LocationAdapter) {
         let location = Location(context: persistenceManager.viewContext)
         location.name = newLocation.name
         location.latitude = newLocation.latitude
