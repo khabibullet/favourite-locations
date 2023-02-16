@@ -73,17 +73,20 @@ class MapViewController: UIViewController {
         return button
     }()
     
-    let pinAmbiguityLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Cannot save coordinates. Please, put pin."
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-        label.backgroundColor = .red
-        label.textColor = .white
-        label.textAlignment = .center
-        label.isHidden = true
-        label.layer.cornerRadius = 20
-        return label
+    let pinAmbiguityLabel: UITextView = {
+        let view = UITextView()
+        view.text = "Cannot save coordinates. Please, put pin."
+        view.contentMode = .scaleToFill
+        view.backgroundColor = .clear
+        view.textColor = .white
+        view.textAlignment = .center
+        view.alpha = 0.0
+        view.layer.cornerRadius = 15
+        view.layer.backgroundColor = UIColor.red.cgColor
+        view.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        view.isScrollEnabled = false
+        view.font = .systemFont(ofSize: 15)
+        return view
     }()
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -124,9 +127,9 @@ class MapViewController: UIViewController {
             $0.width.equalToSuperview().multipliedBy(0.67)
         }
         pinAmbiguityLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
+            $0.top.equalTo(mapView.safeAreaLayoutGuide.snp.top).inset(20)
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(100)
+            $0.width.equalToSuperview().dividedBy(2)
         }
     }
     
@@ -167,6 +170,7 @@ class MapViewController: UIViewController {
         pin.coordinate = coordinates
         mapView.addAnnotation(pin)
         selectedPin = pin
+        pinAmbiguityLabel.alpha = 0.0
     }
     
     @objc func cancelButtonTapped() {
@@ -176,9 +180,9 @@ class MapViewController: UIViewController {
     
     @objc func saveButtonTapped() {
         guard let coordinates = selectedPin?.coordinate else {
-            pinAmbiguityLabel.isHidden = false
-            UIView.animate(withDuration: 3) {
-                self.pinAmbiguityLabel.isHidden = true
+            pinAmbiguityLabel.alpha = 0.7
+            UIView.animate(withDuration: 4) {
+                self.pinAmbiguityLabel.alpha = 0.0
             }
             return
         }

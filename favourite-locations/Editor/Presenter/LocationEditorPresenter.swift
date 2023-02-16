@@ -10,7 +10,7 @@ import Foundation
 protocol LocationEditorPresenterProtocol: AnyObject {
     func getLocation() -> Location?
     func containsLocation(withName name: String) -> Bool
-    func updateEditedLocation(latitude: Double, longitude: Double, comment: String?)
+    func updateEditedLocation(name: String, latitude: Double, longitude: Double, comment: String?)
     func cancelEditing()
     func createLocation(with adapter: LocationAdapter)
     func coordinatesSettingInitiated(completion: @escaping (Double, Double) -> Void)
@@ -48,10 +48,11 @@ class LocationEditorPresenter: LocationEditorPresenterProtocol {
         return locations.contains(where: { $0.name == name })
     }
     
-    func updateEditedLocation(latitude: Double, longitude: Double, comment: String?) {
+    func updateEditedLocation(name: String, latitude: Double, longitude: Double, comment: String?) {
         guard let editedLocation = editedLocation else {
             return
         }
+        editedLocation.name = name
         editedLocation.latitude = latitude
         editedLocation.longitude = longitude
         editedLocation.comment = comment

@@ -59,6 +59,7 @@ extension AppCoordinator: CoordinatorProtocol {
         
         let navController = UINavigationController(rootViewController: locationsView)
         
+        tabBarController.delegate = self
         tabBarController.setViewControllers([navController, mapView], animated: true)
         
         self.locationsPresenter = locationsPresenter
@@ -77,7 +78,7 @@ extension AppCoordinator: CoordinatorProtocol {
 extension AppCoordinator: UITabBarControllerDelegate {
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-
+        
         guard viewController is MapViewController else { return true }
         let locations = locationsPresenter.getLocations()
         let annotations = locations.map({ MKPointAnnotation(location: $0) })

@@ -227,6 +227,7 @@ class LocationEditorView: UIViewController, LocationsEditorProtocol {
             nameBusyErrorLabel.isHidden = false
         } else {
             presenter.updateEditedLocation(
+                name: name,
                 latitude: coordinates?.latitude ?? 0.0,
                 longitude: coordinates?.longitude ?? 0.0,
                 comment: commentTextView.text

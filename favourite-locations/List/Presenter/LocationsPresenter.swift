@@ -16,6 +16,7 @@ protocol LocationsPresenterProtocol: AnyObject {
     func getNumberOfLocationsWithPrefix() -> Int
     func containsLocation(withName name: String) -> Bool
     func getLocations() -> [Location]
+    func setSearchKey(new: String)
     
     func createLocation(newLocation: LocationAdapter)
     func removeLocation(at index: Int)
@@ -78,6 +79,10 @@ extension LocationsPresenter: LocationsPresenterProtocol {
         return locationsWithPrefix
     }
     
+    func setSearchKey(new: String) {
+        searchKey = new
+    }
+    
     func addLocationViaEditor() {
         coordinator.launchEditor(forLocation: nil, inLocations: locations) { (action, location) in
             switch action {
@@ -97,13 +102,12 @@ extension LocationsPresenter: LocationsPresenterProtocol {
             switch action {
             case .restore:
                 if editedLocation.name == oldName {
-                    self.locationsView.updateLocation(at: index)
+                    self.locationsView.reloadCell(at: index)
                 } else {
-                    self.locations.remove(at: index)
-                    self.locationsView.removeLocation(at: index)
+                    self.locations.removeAll(where: { $0 === editedLocation })
                     let newID = self.locations.insertIndexInAccending(editedLocation)
                     self.locations.insert(editedLocation, at: newID)
-                    self.locationsView.insertLocation(at: newID)
+                    self.locationsView.moveCell(at: index, to: newID)
                 }
                 self.persistenceManager.saveContext()
             case .cancel, .create:
@@ -121,13 +125,13 @@ extension LocationsPresenter: LocationsPresenterProtocol {
         persistenceManager.saveContext()
         let index = locations.insertIndexInAccending(location)
         locations.insert(location, at: index)
-        locationsView.insertLocation(at: index)
+        locationsView.insertCell(at: index)
     }
     
     func removeLocation(at index: Int) {
-        persistenceManager.viewContext.delete(locations[index])
-        locations.remove(at: index)
-        locationsView.removeLocation(at: index)
+        let locationToDelete = locationsWithPrefix[index]
+        locations.removeAll(where: { $0 === locationToDelete })
+        persistenceManager.viewContext.delete(locationToDelete)
         persistenceManager.saveContext()
     }
 }
