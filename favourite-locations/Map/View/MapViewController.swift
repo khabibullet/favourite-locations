@@ -33,10 +33,14 @@ class MapViewController: UIViewController {
     
     let segmentedBar: UISegmentedControl = {
         let bar = UISegmentedControl(items: ["Standard", "Satellite", "Hybrid"])
-        bar.backgroundColor = UIColor(named: "mint-light")
+        bar.backgroundColor = .white
         bar.addTarget(self, action: #selector(changeMapType(_:)), for: .valueChanged)
         bar.selectedSegmentIndex = 0
-        bar.tintColor = UIColor(named: "mint-dark")
+        if #available(iOS 13.0, *) {
+            bar.selectedSegmentTintColor = UIColor(named: "mint-light")
+        } else {
+            bar.tintColor = UIColor(named: "mint-light")
+        }
         return bar
     }()
     

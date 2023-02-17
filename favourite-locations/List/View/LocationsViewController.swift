@@ -100,7 +100,7 @@ class LocationsViewController: UIViewController {
         
         navigationTitleStack.addArrangedSubview(spinner)
         navigationTitleStack.addArrangedSubview(progressLabel)
-
+        
         configureBars()
     }
     
@@ -133,6 +133,11 @@ class LocationsViewController: UIViewController {
     }
     
     func configureBars() {
+        guard
+            let navBar = navigationController?.navigationBar,
+            let tabBar = tabBarController?.tabBar
+        else { return }
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(named: "add"),
             style: .plain, target: self,
@@ -145,17 +150,7 @@ class LocationsViewController: UIViewController {
         tabBarItem = UITabBarItem(title: nil, image: UIImage(named: "list"), tag: 0)
         tabBarItem.imageInsets = UIEdgeInsets.init(top: 5, left: 0, bottom: -5, right: 0)
         
-        // Before iOS 13
-        guard let navBar = navigationController?.navigationBar else { return }
-        navBar.backgroundColor = UIColor(named: "mint-light")
-        navBar.layer.shadowColor = UIColor(named: "mint-light")?.cgColor
         
-        guard let tabBar = tabBarController?.tabBar else { return }
-        tabBar.unselectedItemTintColor = UIColor(named: "mint-extra-light")
-        tabBar.backgroundColor = UIColor(named: "mint-light")
-        tabBar.layer.shadowColor = UIColor(named: "mint-light")?.cgColor
-        
-        // After iOS 13
         if #available(iOS 13.0, *) {
             let appearance = UIBarAppearance()
             appearance.backgroundColor = UIColor(named: "mint-light")
@@ -165,11 +160,26 @@ class LocationsViewController: UIViewController {
             navBar.standardAppearance = navBarAppearance
             navBar.scrollEdgeAppearance = navBarAppearance
             
+            let itemAppearance = UITabBarItemAppearance()
+            itemAppearance.normal.iconColor = .white
+            itemAppearance.normal.badgeBackgroundColor = UIColor(named: "mint-extra-light")
+            
             let tabBarAppearance = UITabBarAppearance(barAppearance: appearance)
+            tabBarAppearance.stackedLayoutAppearance = itemAppearance
+            tabBarAppearance.inlineLayoutAppearance = itemAppearance
+            tabBarAppearance.compactInlineLayoutAppearance = itemAppearance
+        
             tabBar.standardAppearance = tabBarAppearance
             if #available(iOS 15.0, *) {
                 tabBar.scrollEdgeAppearance = tabBarAppearance
             }
+        } else {
+            navBar.backgroundColor = UIColor(named: "mint-light")
+            navBar.layer.shadowColor = UIColor(named: "mint-light")?.cgColor
+            
+            tabBar.unselectedItemTintColor = UIColor(named: "mint-extra-light")
+            tabBar.backgroundColor = UIColor(named: "mint-light")
+            tabBar.layer.shadowColor = UIColor(named: "mint-light")?.cgColor
         }
     }
     
