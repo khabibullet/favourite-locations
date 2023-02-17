@@ -31,6 +31,7 @@ class LocationsViewController: UIViewController {
     var presenter: LocationsPresenterProtocol!
     
     var tableNeedsUpdate: TableViewUpdate = .none
+    var prevKey = ""
     
     let locationsTable: UITableView = {
         let table = UITableView()
@@ -58,8 +59,8 @@ class LocationsViewController: UIViewController {
     
     let spinner: UIActivityIndicatorView = {
         let spinner = UIActivityIndicatorView()
-        spinner.hidesWhenStopped = true
-        spinner.tintColor = UIColor(named: "mint-dark")
+        spinner.tintColor = .gray
+        spinner.style = .gray
         return spinner
     }()
     
@@ -72,6 +73,22 @@ class LocationsViewController: UIViewController {
         return label
     }()
     
+    let progressLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Searching..."
+        label.textColor = .black
+        label.sizeToFit()
+        label.font = UIFont.systemFont(ofSize: 18.0)
+        return label
+    }()
+    
+    let navigationTitleStack: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.spacing = 10
+        return stack
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view = locationsTable
@@ -80,9 +97,11 @@ class LocationsViewController: UIViewController {
         locationsTable.dataSource = self
         
         searchController.searchResultsUpdater = self
+        
+        navigationTitleStack.addArrangedSubview(spinner)
+        navigationTitleStack.addArrangedSubview(progressLabel)
 
-        configureNavigationBar()
-        configureTabBar()
+        configureBars()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -113,32 +132,45 @@ class LocationsViewController: UIViewController {
         tableNeedsUpdate = .none
     }
     
-    func configureNavigationBar() {
-        let image = UIImage(named: "add")
-        let item = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(didTapAddButton))
-        
-        navigationItem.rightBarButtonItem = item
+    func configureBars() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(named: "add"),
+            style: .plain, target: self,
+            action: #selector(didTapAddButton)
+        )
         navigationItem.titleView = titleLabel
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
         
-        guard let bar = navigationController?.navigationBar else { return }
-        bar.backgroundColor = UIColor(named: "mint-extra-light")
-        bar.layer.shadowColor = UIColor(named: "mint-extra-light")?.cgColor
-        if #available(iOS 13.0, *) {
-            let appearance = UINavigationBarAppearance()
-            appearance.backgroundColor = UIColor(named: "mint-extra-light")
-            appearance.shadowColor = .clear
-            bar.scrollEdgeAppearance = appearance
-            bar.standardAppearance = appearance
-        }
-    }
-    
-    func configureTabBar() {
-        tabBarController?.tabBar.unselectedItemTintColor = UIColor(named: "mint-light-2")
-        tabBarController?.tabBar.backgroundColor = UIColor(named: "mint-extra-light")
         tabBarItem = UITabBarItem(title: nil, image: UIImage(named: "list"), tag: 0)
         tabBarItem.imageInsets = UIEdgeInsets.init(top: 5, left: 0, bottom: -5, right: 0)
+        
+        // Before iOS 13
+        guard let navBar = navigationController?.navigationBar else { return }
+        navBar.backgroundColor = UIColor(named: "mint-light")
+        navBar.layer.shadowColor = UIColor(named: "mint-light")?.cgColor
+        
+        guard let tabBar = tabBarController?.tabBar else { return }
+        tabBar.unselectedItemTintColor = UIColor(named: "mint-extra-light")
+        tabBar.backgroundColor = UIColor(named: "mint-light")
+        tabBar.layer.shadowColor = UIColor(named: "mint-light")?.cgColor
+        
+        // After iOS 13
+        if #available(iOS 13.0, *) {
+            let appearance = UIBarAppearance()
+            appearance.backgroundColor = UIColor(named: "mint-light")
+            appearance.shadowColor = .clear
+            
+            let navBarAppearance = UINavigationBarAppearance(barAppearance: appearance)
+            navBar.standardAppearance = navBarAppearance
+            navBar.scrollEdgeAppearance = navBarAppearance
+            
+            let tabBarAppearance = UITabBarAppearance(barAppearance: appearance)
+            tabBar.standardAppearance = tabBarAppearance
+            if #available(iOS 15.0, *) {
+                tabBar.scrollEdgeAppearance = tabBarAppearance
+            }
+        }
     }
     
     @objc func didTapAddButton() {
@@ -147,9 +179,20 @@ class LocationsViewController: UIViewController {
 }
 
 extension LocationsViewController: UISearchResultsUpdating {
+    
     func updateSearchResults(for searchController: UISearchController) {
-        presenter.setSearchKey(new: searchController.searchBar.text ?? "")
-        locationsTable.reloadData()
+        let currentKey = searchController.searchBar.text ?? ""
+        if prevKey == currentKey { return }
+        prevKey = currentKey
+        
+        spinner.startAnimating()
+        navigationItem.titleView = navigationTitleStack
+        presenter.updateSearchResults(by: currentKey) { [weak self] in
+            guard let self = self else { return }
+            self.locationsTable.reloadData()
+            self.navigationItem.titleView = self.titleLabel
+            self.spinner.stopAnimating()
+        }
     }
 }
 

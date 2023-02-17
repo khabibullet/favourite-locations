@@ -16,7 +16,7 @@ protocol LocationsPresenterProtocol: AnyObject {
     func getNumberOfLocationsWithPrefix() -> Int
     func containsLocation(withName name: String) -> Bool
     func getLocations() -> [Location]
-    func setSearchKey(new: String)
+    func updateSearchResults(by newKey: String, completion: @escaping () -> Void)
     
     func createLocation(newLocation: LocationAdapter)
     func removeLocation(at index: Int)
@@ -34,12 +34,11 @@ class LocationsPresenter {
     private let persistenceManager: PersistenceStoreManaged
 
     var locations: [Location]
-    var searchKey = ""
-    
-    var locationsWithPrefix: [Location] {
-        return locations.filter { $0.name.hasPrefix(searchKey) }
-    }
-    
+    var locationsWithPrefix: [Location] = []
+
+    let searchQueue = OperationQueue()
+    var searchOperation: Operation?
+
     init(
         view: LocationsViewProtocol,
         model: [Location],
@@ -56,12 +55,12 @@ class LocationsPresenter {
     func fetchLocations() {
         persistenceManager.fetchModelEntities(entityName: Location.entityName, ofType: Location.self) { (entities) in
             self.locations.append(contentsOf: entities)
+            self.updateLocationsWithPrefix(prefix: "")
         }
     }
 }
 
 extension LocationsPresenter: LocationsPresenterProtocol {
-    
     
     func getLocationWithPrefixOnIndex(id: Int) -> Location {
         return locationsWithPrefix[id]
@@ -69,6 +68,10 @@ extension LocationsPresenter: LocationsPresenterProtocol {
     
     func getNumberOfLocationsWithPrefix() -> Int {
         return locationsWithPrefix.count
+    }
+    
+    func updateLocationsWithPrefix(prefix: String) {
+        locationsWithPrefix = locations.filter { $0.name.hasPrefix(prefix) }
     }
     
     func containsLocation(withName name: String) -> Bool {
@@ -79,8 +82,19 @@ extension LocationsPresenter: LocationsPresenterProtocol {
         return locationsWithPrefix
     }
     
-    func setSearchKey(new: String) {
-        searchKey = new
+    func updateSearchResults(by newKey: String, completion: @escaping () -> Void) {
+        
+        searchQueue.cancelAllOperations()
+        let searchOperation = BlockOperation()
+        searchOperation.addExecutionBlock { [weak searchOperation] in
+            sleep(2) // Synthetic delay to test time-consuming operations handling
+            self.updateLocationsWithPrefix(prefix: newKey)
+            guard let operation = searchOperation, !operation.isCancelled else { return }
+            OperationQueue.main.addOperation {
+                completion()
+            }
+        }
+        searchQueue.addOperation(searchOperation)
     }
     
     func addLocationViaEditor() {
@@ -107,6 +121,7 @@ extension LocationsPresenter: LocationsPresenterProtocol {
                     self.locations.removeAll(where: { $0 === editedLocation })
                     let newID = self.locations.insertIndexInAccending(editedLocation)
                     self.locations.insert(editedLocation, at: newID)
+                    self.updateLocationsWithPrefix(prefix: "")
                     self.locationsView.moveCell(at: index, to: newID)
                 }
                 self.persistenceManager.saveContext()
@@ -125,12 +140,14 @@ extension LocationsPresenter: LocationsPresenterProtocol {
         persistenceManager.saveContext()
         let index = locations.insertIndexInAccending(location)
         locations.insert(location, at: index)
+        updateLocationsWithPrefix(prefix: "")
         locationsView.insertCell(at: index)
     }
     
     func removeLocation(at index: Int) {
         let locationToDelete = locationsWithPrefix[index]
         locations.removeAll(where: { $0 === locationToDelete })
+        updateLocationsWithPrefix(prefix: "")
         persistenceManager.viewContext.delete(locationToDelete)
         persistenceManager.saveContext()
     }

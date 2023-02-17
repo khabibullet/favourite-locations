@@ -43,7 +43,7 @@ class LocationEditorView: UIViewController, LocationsEditorProtocol {
         view.isScrollEnabled = true
         view.showsHorizontalScrollIndicator = false
         view.showsVerticalScrollIndicator = false
-        view.backgroundColor = UIColor(named: "mint-light-2")
+        view.backgroundColor = UIColor(named: "mint-extra-light")
         return view
     }()
     
