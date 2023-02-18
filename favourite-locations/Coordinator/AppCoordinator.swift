@@ -81,7 +81,7 @@ extension AppCoordinator: UITabBarControllerDelegate {
         
         guard viewController is MapViewController else { return true }
         let locations = locationsPresenter.getLocations()
-        let annotations = locations.map({ MKPointAnnotation(location: $0) })
+        let annotations = locations.map({ CustomAnnotation(location: $0) })
         mapPresenter.setAnnotations(pins: annotations)
 
         return true

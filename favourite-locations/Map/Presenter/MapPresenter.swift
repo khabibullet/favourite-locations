@@ -11,7 +11,7 @@ import MapKit
 
 protocol MapPresenterProtocol: AnyObject {
     var view: MapViewProtocol! { get }
-    func setAnnotations(pins: [MKPointAnnotation])
+    func setAnnotations(pins: [CustomAnnotation])
 }
 
 class MapPresenter: MapPresenterProtocol {
@@ -19,15 +19,15 @@ class MapPresenter: MapPresenterProtocol {
     unowned var coordinator: CoordinatorProtocol!
     unowned var view: MapViewProtocol!
     
-    var model: [MKPointAnnotation]
+    var model: [CustomAnnotation]
     
-    init(view: MapViewProtocol, model: [MKPointAnnotation], coordinator: CoordinatorProtocol) {
+    init(view: MapViewProtocol, model: [CustomAnnotation], coordinator: CoordinatorProtocol) {
         self.view = view
         self.model = model
         self.coordinator = coordinator
     }
     
-    func setAnnotations(pins: [MKPointAnnotation]) {
+    func setAnnotations(pins: [CustomAnnotation]) {
         model = pins
         view.replaceAnnotations(with: model)
     }

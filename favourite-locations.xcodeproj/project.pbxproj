@@ -21,10 +21,10 @@
 		3FBCD1DE298572330088A840 /* LocationEditorPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBCD1DD298572330088A840 /* LocationEditorPresenter.swift */; };
 		3FBE9DBB295DFFFB0055AECA /* LocationEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBE9DBA295DFFFB0055AECA /* LocationEditorView.swift */; };
 		3FBFAA2B29993D5300669854 /* ErrorLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBFAA2A29993D5200669854 /* ErrorLabel.swift */; };
+		3FCAC68E29A150AA00C29DA3 /* CustomAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FCAC68D29A150AA00C29DA3 /* CustomAnnotation.swift */; };
 		3FE030B7295F2F9A00EDC03C /* ModuleBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FE030B6295F2F9A00EDC03C /* ModuleBuilder.swift */; };
 		3FE030C0295F37D200EDC03C /* LocationsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FE030BF295F37D200EDC03C /* LocationsPresenter.swift */; };
 		3FE33723299AABD70064DDFC /* LocationAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FE33722299AABD70064DDFC /* LocationAdapter.swift */; };
-		3FE33725299BCC810064DDFC /* MKPointAnnotation+InitFromLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FE33724299BCC810064DDFC /* MKPointAnnotation+InitFromLocation.swift */; };
 		3FE737F42960D1EA008C890A /* LocationsDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 3FE737F22960D1EA008C890A /* LocationsDataModel.xcdatamodeld */; };
 		4118125828AE8321008ED400 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4118125728AE8321008ED400 /* AppDelegate.swift */; };
 		4118126C28AE8748008ED400 /* LocationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4118126B28AE8748008ED400 /* LocationsViewController.swift */; };
@@ -49,10 +49,10 @@
 		3FBCD1DD298572330088A840 /* LocationEditorPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationEditorPresenter.swift; sourceTree = "<group>"; };
 		3FBE9DBA295DFFFB0055AECA /* LocationEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationEditorView.swift; sourceTree = "<group>"; };
 		3FBFAA2A29993D5200669854 /* ErrorLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorLabel.swift; sourceTree = "<group>"; };
+		3FCAC68D29A150AA00C29DA3 /* CustomAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAnnotation.swift; sourceTree = "<group>"; };
 		3FE030B6295F2F9A00EDC03C /* ModuleBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleBuilder.swift; sourceTree = "<group>"; };
 		3FE030BF295F37D200EDC03C /* LocationsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationsPresenter.swift; sourceTree = "<group>"; };
 		3FE33722299AABD70064DDFC /* LocationAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationAdapter.swift; sourceTree = "<group>"; };
-		3FE33724299BCC810064DDFC /* MKPointAnnotation+InitFromLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MKPointAnnotation+InitFromLocation.swift"; sourceTree = "<group>"; };
 		3FE737F32960D1EA008C890A /* LocationsDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LocationsDataModel.xcdatamodel; sourceTree = "<group>"; };
 		4118125428AE8321008ED400 /* favourite-locations.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "favourite-locations.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4118125728AE8321008ED400 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -197,7 +197,7 @@
 		3FE030C1295F385400EDC03C /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				3FE33724299BCC810064DDFC /* MKPointAnnotation+InitFromLocation.swift */,
+				3FCAC68D29A150AA00C29DA3 /* CustomAnnotation.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -404,7 +404,6 @@
 				4118126C28AE8748008ED400 /* LocationsViewController.swift in Sources */,
 				3FE33723299AABD70064DDFC /* LocationAdapter.swift in Sources */,
 				3F043B41295DD07E0036AC6A /* PersistenceManager.swift in Sources */,
-				3FE33725299BCC810064DDFC /* MKPointAnnotation+InitFromLocation.swift in Sources */,
 				3F7D4F86296493C0009CB727 /* UISearchBar+TextField.swift in Sources */,
 				3F68CDFA29634A6A00FB0F0B /* LocationTableCell.swift in Sources */,
 				3F96441B295F730400E04D65 /* AppCoordinator.swift in Sources */,
@@ -420,6 +419,7 @@
 				3FE737F42960D1EA008C890A /* LocationsDataModel.xcdatamodeld in Sources */,
 				4118126E28AE8874008ED400 /* MapViewController.swift in Sources */,
 				3F246A2E297DB8690060F20C /* UITextView+Placeholder.swift in Sources */,
+				3FCAC68E29A150AA00C29DA3 /* CustomAnnotation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

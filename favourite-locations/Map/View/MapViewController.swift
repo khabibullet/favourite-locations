@@ -10,14 +10,14 @@ import MapKit
 import CoreLocation
 
 protocol MapViewProtocol: AnyObject {
-    func replaceAnnotations(with newAnnotations: [MKPointAnnotation])
+    func replaceAnnotations(with newAnnotations: [CustomAnnotation])
 }
 
 class MapViewController: UIViewController {
     
     var presenter: MapPresenterProtocol!
     var completion: ((Double, Double) -> Void)?
-    var selectedPin: MKPointAnnotation?
+    var selectedPin: CustomAnnotation?
     
     let mapView: MKMapView = {
         let view = MKMapView()
@@ -170,7 +170,7 @@ class MapViewController: UIViewController {
         }
         let touchPoint = gestureRecognizer.location(in: mapView)
         let coordinates = mapView.convert(touchPoint, toCoordinateFrom: mapView)
-        let pin = MKPointAnnotation()
+        let pin = CustomAnnotation()
         pin.coordinate = coordinates
         mapView.addAnnotation(pin)
         selectedPin = pin
@@ -236,7 +236,7 @@ extension MapViewController: MapViewProtocol {
         }
     }
     
-    func replaceAnnotations(with newAnnotations: [MKPointAnnotation]) {
+    func replaceAnnotations(with newAnnotations: [CustomAnnotation]) {
         mapView.removeAnnotations(mapView.annotations)
         mapView.addAnnotations(newAnnotations)
     }
@@ -245,14 +245,18 @@ extension MapViewController: MapViewProtocol {
 extension MapViewController: MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        guard !(annotation is MKUserLocation) else { return nil }
-        var view = mapView.dequeueReusableAnnotationView(withIdentifier: "custom")
+        guard annotation is CustomAnnotation else { return nil }
+        var view = mapView.dequeueReusableAnnotationView(withIdentifier: CustomAnnotation.reuseID)
         if let view = view {
             view.annotation = annotation
         } else {
-            view = MKAnnotationView(annotation: annotation, reuseIdentifier: "custom")
+            view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: CustomAnnotation.reuseID)
         }
-        view?.image = UIImage(named: "pin")
+        guard let view = view as? MKMarkerAnnotationView else { return nil }
+        view.canShowCallout = true
+        view.animatesWhenAdded = true
+        view.glyphImage = UIImage(named: "pin")
+        view.glyphTintColor = .white
         return view
     }
 }

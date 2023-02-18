@@ -36,7 +36,7 @@ class ModuleBuilder: Builder {
     
     static func buildMapModule(coordinator: CoordinatorProtocol) -> (MapViewProtocol, MapPresenterProtocol) {
         
-        let model: [MKPointAnnotation] = []
+        let model: [CustomAnnotation] = []
         let view = MapViewController()
         view.setupPresentationMode()
         let presenter = MapPresenter(view: view, model: model, coordinator: coordinator)
