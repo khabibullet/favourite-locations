@@ -45,7 +45,7 @@ class LocationEditorPresenter: LocationEditorPresenterProtocol {
     }
     
     func containsLocation(withName name: String) -> Bool {
-        return locations.contains(where: { $0.name == name })
+        return locations.contains(where: { $0.name.lowercased() == name.lowercased() })
     }
     
     func updateEditedLocation(name: String, latitude: Double, longitude: Double, comment: String?) {

@@ -14,9 +14,9 @@ extension Array where Element == Location {
         var hi = self.count - 1
         while lo <= hi {
             let mid = (lo + hi) / 2
-            if self[mid].name < elem.name {
+            if self[mid].name.lowercased() < elem.name.lowercased() {
                 lo = mid + 1
-            } else if elem.name < self[mid].name {
+            } else if elem.name.lowercased() < self[mid].name.lowercased() {
                 hi = mid - 1
             } else {
                 return mid

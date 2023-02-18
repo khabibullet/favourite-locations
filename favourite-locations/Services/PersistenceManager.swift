@@ -39,7 +39,7 @@ class PersistenceManager: PersistenceStoreManaged {
     
     func fetchModelEntities<T: NSFetchRequestResult>(entityName: String, ofType: T.Type, sendToPresenter: @escaping ([T]) -> Void) {
         let request = NSFetchRequest<T>(entityName: entityName)
-        request.sortDescriptors = [NSSortDescriptor.init(key: "name", ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor.init(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))]
         do {
             let entities = try viewContext.fetch(request)
             sendToPresenter(entities)

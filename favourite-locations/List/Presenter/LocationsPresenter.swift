@@ -35,7 +35,7 @@ class LocationsPresenter {
 
     var locations: [Location]
     var locationsWithPrefix: [Location] {
-        return locations.filter { $0.name.hasPrefix(searchPrefix) }
+        return locations.filter { $0.name.lowercased().hasPrefix(searchPrefix) }
     }
 
     let searchQueue = OperationQueue()
@@ -73,11 +73,11 @@ extension LocationsPresenter: LocationsPresenterProtocol {
     }
     
     func setSearchPrefix(to prefix: String) {
-        searchPrefix = prefix
+        searchPrefix = prefix.lowercased()
     }
     
     func containsLocation(withName name: String) -> Bool {
-        return locations.contains(where: { $0.name == name })
+        return locations.contains(where: { $0.name.lowercased() == name.lowercased() })
     }
     
     func getLocations() -> [Location] {
@@ -90,7 +90,7 @@ extension LocationsPresenter: LocationsPresenterProtocol {
         let searchOperation = BlockOperation()
         searchOperation.addExecutionBlock { [weak searchOperation] in
             sleep(2) // Synthetic delay to test time-consuming operations handling
-            self.searchPrefix = newKey
+            self.searchPrefix = newKey.lowercased()
             guard let operation = searchOperation, !operation.isCancelled else { return }
             OperationQueue.main.addOperation {
                 completion()
