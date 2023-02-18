@@ -55,9 +55,9 @@ class MapViewController: UIViewController {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Locations"
-        label.textColor = UIColor(named: "mint-dark")
+        label.textColor = .black
         label.sizeToFit()
-        label.font = UIFont.boldSystemFont(ofSize: 16.0)
+        label.font = UIFont.systemFont(ofSize: 18.0)
         return label
     }()
 

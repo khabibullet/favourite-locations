@@ -38,6 +38,7 @@ class LocationsPresenter {
 
     let searchQueue = OperationQueue()
     var searchOperation: Operation?
+    var searchPrefix = ""
 
     init(
         view: LocationsViewProtocol,
@@ -71,7 +72,8 @@ extension LocationsPresenter: LocationsPresenterProtocol {
     }
     
     func updateLocationsWithPrefix(prefix: String) {
-        locationsWithPrefix = locations.filter { $0.name.hasPrefix(prefix) }
+        searchPrefix = prefix
+        locationsWithPrefix = locations.filter { $0.name.hasPrefix(searchPrefix) }
     }
     
     func containsLocation(withName name: String) -> Bool {
@@ -84,11 +86,12 @@ extension LocationsPresenter: LocationsPresenterProtocol {
     
     func updateSearchResults(by newKey: String, completion: @escaping () -> Void) {
         
+        searchPrefix = newKey
         searchQueue.cancelAllOperations()
         let searchOperation = BlockOperation()
         searchOperation.addExecutionBlock { [weak searchOperation] in
             sleep(2) // Synthetic delay to test time-consuming operations handling
-            self.updateLocationsWithPrefix(prefix: newKey)
+            self.updateLocationsWithPrefix(prefix: self.searchPrefix)
             guard let operation = searchOperation, !operation.isCancelled else { return }
             OperationQueue.main.addOperation {
                 completion()
@@ -119,10 +122,15 @@ extension LocationsPresenter: LocationsPresenterProtocol {
                     self.locationsView.reloadCell(at: index)
                 } else {
                     self.locations.removeAll(where: { $0 === editedLocation })
-                    let newID = self.locations.insertIndexInAccending(editedLocation)
-                    self.locations.insert(editedLocation, at: newID)
-                    self.updateLocationsWithPrefix(prefix: "")
-                    self.locationsView.moveCell(at: index, to: newID)
+                    self.locations.insertInAccending(editedLocation)
+                    
+                    self.updateLocationsWithPrefix(prefix: self.searchPrefix)
+                    if let newID = self.locationsWithPrefix.firstIndex(where: { $0 === editedLocation }) {
+                        self.locationsView.moveCell(at: index, to: newID)
+                    } else {
+                        self.locationsView.removeCell(at: index)
+                    }
+                    
                 }
                 self.persistenceManager.saveContext()
             case .cancel, .create:
@@ -138,16 +146,20 @@ extension LocationsPresenter: LocationsPresenterProtocol {
         location.longitude = newLocation.longitude
         location.comment = newLocation.comment
         persistenceManager.saveContext()
-        let index = locations.insertIndexInAccending(location)
-        locations.insert(location, at: index)
-        updateLocationsWithPrefix(prefix: "")
-        locationsView.insertCell(at: index)
+        
+        locations.insertInAccending(location)
+        
+        if location.name.hasPrefix(searchPrefix) {
+            let indexWithPrefix = locationsWithPrefix.insertIndexInAccending(location)
+            locationsWithPrefix.insert(location, at: indexWithPrefix)
+            locationsView.insertCell(at: indexWithPrefix)
+        }
     }
     
     func removeLocation(at index: Int) {
         let locationToDelete = locationsWithPrefix[index]
         locations.removeAll(where: { $0 === locationToDelete })
-        updateLocationsWithPrefix(prefix: "")
+        locationsWithPrefix.remove(at: index)
         persistenceManager.viewContext.delete(locationToDelete)
         persistenceManager.saveContext()
     }

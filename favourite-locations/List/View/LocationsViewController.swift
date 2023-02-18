@@ -13,6 +13,7 @@ enum TableViewUpdate {
     case reload(cellID: Int)
     case move(prevCellID: Int, newCellID: Int)
     case insert(cellID: Int)
+    case remove(cellID: Int)
     case none
 }
 
@@ -20,6 +21,7 @@ protocol LocationsViewProtocol: AnyObject {
     func insertCell(at index: Int)
     func moveCell(at prevID: Int, to newID: Int)
     func reloadCell(at index: Int)
+    func removeCell(at index: Int)
 }
 
 protocol LocationTableCellDelegate: AnyObject {
@@ -125,6 +127,10 @@ class LocationsViewController: UIViewController {
         case .insert(let cellID):
             locationsTable.beginUpdates()
             locationsTable.insertRows(at: [IndexPath(row: cellID, section: 0)], with: .automatic)
+            locationsTable.endUpdates()
+        case .remove(let cellID):
+            locationsTable.beginUpdates()
+            locationsTable.deleteRows(at: [IndexPath(row: cellID, section: 0)], with: .automatic)
             locationsTable.endUpdates()
         case .none:
             break
@@ -275,6 +281,10 @@ extension LocationsViewController: LocationsViewProtocol {
     
     func reloadCell(at index: Int) {
         tableNeedsUpdate = .reload(cellID: index)
+    }
+    
+    func removeCell(at index: Int) {
+        tableNeedsUpdate = .remove(cellID: index)
     }
 }
 

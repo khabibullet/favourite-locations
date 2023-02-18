@@ -195,7 +195,7 @@ class LocationEditorView: UIViewController, LocationsEditorProtocol {
         var offset = 0.0
         if activeSubview === commentTextView {
             let bottomY = activeSubview.frame.maxY
-            let bottom = vStack.frame.origin.y + bottomY - 10
+            let bottom = vStack.frame.origin.y + bottomY + 10
             let visibleAreaHeight = view.safeAreaLayoutGuide.layoutFrame.height - keyboardHeight
             offset = bottom - visibleAreaHeight
         }
