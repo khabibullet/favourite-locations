@@ -109,6 +109,18 @@ class LocationEditorView: UIViewController, LocationsEditorProtocol {
         return stack
     }()
     
+    let saveButton: UIButton = {
+        let button = UIButton()
+        button.layer.cornerRadius = 10
+        button.layer.backgroundColor = UIColor.white.cgColor
+        button.layer.borderWidth = 1.5
+        button.layer.borderColor = UIColor(named: "mint-dark")?.cgColor
+        button.addTarget(self, action: #selector(didTapSaveButton), for: .touchUpInside)
+        button.setTitleColor(UIColor(named: "mint-dark"), for: .normal)
+        button.setTitle("Save", for: .normal)
+        return button
+    }()
+    
     let vStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
@@ -139,6 +151,7 @@ class LocationEditorView: UIViewController, LocationsEditorProtocol {
         vStack.addArrangedSubview(topHStack)
         vStack.addArrangedSubview(coordinatesAmbiguityErrorLabel)
         vStack.addArrangedSubview(commentTextView)
+        vStack.addArrangedSubview(saveButton)
         contentView.addSubview(vStack)
         scrollView.addSubview(contentView)
         view.addSubview(scrollView)
@@ -175,6 +188,10 @@ class LocationEditorView: UIViewController, LocationsEditorProtocol {
             $0.verticalEdges.equalToSuperview().inset(20)
             $0.width.equalToSuperview().dividedBy(1.5)
             $0.centerX.equalToSuperview()
+        }
+        
+        saveButton.snp.makeConstraints {
+            $0.height.equalTo(topHStack.snp.height)
         }
     }
     
