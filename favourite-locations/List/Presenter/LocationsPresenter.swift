@@ -11,6 +11,7 @@ import UIKit
 protocol LocationsPresenterProtocol: AnyObject {
     func addLocationViaEditor()
     func editLocationViaEditor(location index: Int)
+    func showSingleLocation(location: Location)
     
     func getLocationWithPrefixOnIndex(id: Int) -> Location
     func getNumberOfLocationsWithPrefix() -> Int
@@ -82,6 +83,10 @@ extension LocationsPresenter: LocationsPresenterProtocol {
     
     func getLocations() -> [Location] {
         return locationsWithPrefix
+    }
+    
+    func showSingleLocation(location: Location) {
+        coordinator.showSingleLocation(location: location)
     }
     
     func updateSearchResults(by newKey: String, completion: @escaping () -> Void) {

@@ -12,6 +12,7 @@ import MapKit
 protocol MapPresenterProtocol: AnyObject {
     var view: MapViewProtocol! { get }
     func setAnnotations(pins: [CustomAnnotation])
+    func setAnnotation(pin: CustomAnnotation)
 }
 
 class MapPresenter: MapPresenterProtocol {
@@ -30,5 +31,9 @@ class MapPresenter: MapPresenterProtocol {
     func setAnnotations(pins: [CustomAnnotation]) {
         model = pins
         view.replaceAnnotations(with: model)
+    }
+    
+    func setAnnotation(pin: CustomAnnotation) {
+        view.focusOnLocation(pin: pin)
     }
 }

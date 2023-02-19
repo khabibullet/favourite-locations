@@ -11,9 +11,10 @@ import CoreLocation
 
 protocol MapViewProtocol: AnyObject {
     func replaceAnnotations(with newAnnotations: [CustomAnnotation])
+    func focusOnLocation(pin: CustomAnnotation)
 }
 
-class MapViewController: UIViewController {
+class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     var presenter: MapPresenterProtocol!
     var completion: ((Double, Double) -> Void)?
@@ -157,11 +158,7 @@ class MapViewController: UIViewController {
     }
     
     @objc func locateButtonTapped() {
-        if let location = locationManager.location?.coordinate {
-            let region = MKCoordinateRegion.init(center: location, latitudinalMeters: 400, longitudinalMeters: 400)
-            mapView.setRegion(region, animated: true)
-            locationManager.startUpdatingLocation()
-        }
+        centerUserPosition()
     }
     
     @objc func tapInitiated(_ gestureRecognizer: UIGestureRecognizer) {
@@ -203,16 +200,25 @@ class MapViewController: UIViewController {
     }
 }
 
-extension MapViewController: CLLocationManagerDelegate {
-	
-	func centerLocation(_ location: CLLocation, regionRadius: CLLocationDistance = 1000) {
-		let coordinateRegion = MKCoordinateRegion(center: location.coordinate,
-			latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
-		mapView.setRegion(coordinateRegion, animated: true)
-	}
-}
-
 extension MapViewController: MapViewProtocol {
+    
+    func maxZoomOutUserLocation() {
+        if let location = locationManager.location?.coordinate {
+            let span = MKCoordinateSpan(latitudeDelta: 180.0, longitudeDelta: 180.0)
+            let region = MKCoordinateRegion(center: location, span: span)
+            mapView.setRegion(region, animated: true)
+            locationManager.startUpdatingLocation()
+        }
+    }
+    
+    func centerUserPosition() {
+        if let location = locationManager.location?.coordinate {
+            let region = MKCoordinateRegion(center: location, latitudinalMeters: 400, longitudinalMeters: 400)
+            mapView.setRegion(region, animated: true)
+            locationManager.startUpdatingLocation()
+        }
+    }
+    
     func setupEditMode() {
         navigationItem.rightBarButtonItem = saveButton
         navigationItem.leftBarButtonItem = cancelButton
@@ -223,7 +229,7 @@ extension MapViewController: MapViewProtocol {
         }
         let gesture = UITapGestureRecognizer(target: self, action: #selector(tapInitiated))
         mapView.addGestureRecognizer(gesture)
-        
+        centerUserPosition()
     }
     
     func setupPresentationMode() {
@@ -234,11 +240,20 @@ extension MapViewController: MapViewProtocol {
             mapView.removeAnnotation(previous)
             selectedPin = nil
         }
+        maxZoomOutUserLocation()
     }
     
     func replaceAnnotations(with newAnnotations: [CustomAnnotation]) {
         mapView.removeAnnotations(mapView.annotations)
         mapView.addAnnotations(newAnnotations)
+        maxZoomOutUserLocation()
+    }
+    
+    func focusOnLocation(pin: CustomAnnotation) {
+        mapView.removeAnnotations(mapView.annotations)
+        mapView.addAnnotation(pin)
+        let region = MKCoordinateRegion(center: pin.coordinate, latitudinalMeters: 400000, longitudinalMeters: 400000)
+        mapView.setRegion(region, animated: true)
     }
 }
 

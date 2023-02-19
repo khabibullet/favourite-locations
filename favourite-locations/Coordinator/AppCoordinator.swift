@@ -16,6 +16,7 @@ protocol CoordinatorProtocol: AnyObject {
         withCompletion completion: @escaping (ActionOnComplete, LocationAdapter?) -> Void
     )
     func showMapInEditMode(completion: @escaping (Double, Double) -> Void)
+    func showSingleLocation(location: Location)
 }
 
 class AppCoordinator: NSObject {
@@ -72,6 +73,12 @@ extension AppCoordinator: CoordinatorProtocol {
         mapView.completion = completion
         mapView.setupEditMode()
         locationNavigationController.pushViewController(mapView, animated: true)
+    }
+    
+    func showSingleLocation(location: Location) {
+        let annotation = CustomAnnotation(location: location)
+        mapPresenter.setAnnotation(pin: annotation)
+        tabBarController.selectedIndex = 1
     }
 }
 
