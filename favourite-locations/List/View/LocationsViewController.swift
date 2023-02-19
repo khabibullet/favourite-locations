@@ -26,6 +26,7 @@ protocol LocationsViewProtocol: AnyObject {
 
 protocol LocationTableCellDelegate: AnyObject {
     func locationCellArrowButtonTapped(cell: LocationTableCell)
+    func locationCellLocateButtonTapped(location: Location)
 }
 
 class LocationsViewController: UIViewController {
@@ -268,6 +269,11 @@ extension LocationsViewController: UITableViewDelegate {
         swipe.performsFirstActionWithFullSwipe = false
         return swipe
     }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let cell = cell as? LocationTableCell else { return }
+        cell.prepareToDisplay()
+    }
 }
 
 extension LocationsViewController: LocationsViewProtocol {
@@ -294,5 +300,9 @@ extension LocationsViewController: LocationTableCellDelegate {
         locationsTable.beginUpdates()
         cell.switchDetailsAppearance()
         locationsTable.endUpdates()
+    }
+    
+    func locationCellLocateButtonTapped(location: Location) {
+        presenter.showSingleLocation(location: location)
     }
 }

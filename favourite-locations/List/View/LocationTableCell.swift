@@ -16,8 +16,8 @@ class LocationTableCell: UITableViewCell {
         didSet {
             guard let location = location else { return }
             title.text = location.name
-            coordinates.text = location.coordinates
             comment.text = location.comment
+            coordinatesLabel.text = location.coordinates
         }
     }
     
@@ -33,19 +33,11 @@ class LocationTableCell: UITableViewCell {
         let button = UIButton()
         button.setImage(UIImage(named: "arrow-down"), for: .normal)
         button.setImage(UIImage(named: "arrow-up"), for: .selected)
-        button.addTarget(self, action: #selector(didTapArrow), for: .touchUpInside)
         button.isSelected = false
-        button.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         button.imageView?.contentMode = .scaleAspectFit
+        button.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        button.isUserInteractionEnabled = false
         return button
-    }()
-    
-    let coordinates: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 16)
-        label.textColor = .lightGray
-        label.isHidden = true
-        return label
     }()
     
     let comment: UILabel = {
@@ -70,7 +62,7 @@ class LocationTableCell: UITableViewCell {
         let stack = UIStackView()
         stack.axis = .vertical
         stack.distribution = .fill
-        stack.alignment = .fill
+        stack.alignment = .leading
         stack.spacing = 10
         stack.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         stack.isLayoutMarginsRelativeArrangement = true
@@ -80,6 +72,28 @@ class LocationTableCell: UITableViewCell {
         return stack
     }()
     
+    let coordinatesImageView: UIImageView = {
+        let view = UIImageView(image: UIImage(named: "location-contour")?.withRenderingMode(.alwaysTemplate))
+        view.tintColor = .lightGray
+        return view
+    }()
+    
+    let coordinatesLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = .lightGray
+        return label
+    }()
+    
+    let coordinatesContainer: UIView = {
+        let view = UIView()
+        view.layer.borderColor = UIColor.lightGray.cgColor
+        view.layer.borderWidth = 1
+        view.layer.cornerRadius = 5
+        view.isHidden = true
+        return view
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
@@ -87,10 +101,19 @@ class LocationTableCell: UITableViewCell {
         
         hStack.addArrangedSubview(title)
         hStack.addArrangedSubview(arrowButton)
+        let hStackGesture = UITapGestureRecognizer(target: self, action: #selector(didTapArrow))
+        hStack.addGestureRecognizer(hStackGesture)
+        
+        coordinatesContainer.addSubview(coordinatesLabel)
+        coordinatesContainer.addSubview(coordinatesImageView)
+
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(didTapLocateButton))
+        coordinatesContainer.addGestureRecognizer(gesture)
         
         vStack.addArrangedSubview(hStack)
-        vStack.addArrangedSubview(coordinates)
+        vStack.addArrangedSubview(coordinatesContainer)
         vStack.addArrangedSubview(comment)
+        
 
         contentView.addSubview(vStack)
         
@@ -103,38 +126,69 @@ class LocationTableCell: UITableViewCell {
     
     func setConstraints() {
         vStack.snp.makeConstraints {
+            $0.top.equalToSuperview().inset(5)
+            $0.bottom.equalToSuperview().inset(5).priority(999)
             $0.horizontalEdges.equalToSuperview().inset(10)
+        }
+        arrowButton.snp.makeConstraints {
+            $0.trailing.equalTo(vStack.snp.trailing).inset(10)
+        }
+        coordinatesImageView.snp.makeConstraints {
+            $0.width.equalTo(20)
+            $0.height.equalTo(20)
+            $0.top.equalToSuperview().inset(5)
+            $0.trailing.equalToSuperview().inset(5)
+            $0.leading.equalTo(coordinatesLabel.snp.trailing).offset(10)
+        }
+        coordinatesLabel.snp.makeConstraints {
             $0.verticalEdges.equalToSuperview().inset(5)
+            $0.leading.equalToSuperview().inset(5)
         }
     }
     
     func switchDetailsAppearance() {
+        if self.arrowButton.isSelected {
+            collapseCell()
+        } else {
+            expandCell()
+        }
+    }
+    
+    func expandCell() {
         UIView.animate(withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.01, options: .curveEaseIn) {
-            if self.arrowButton.isSelected {
-                self.coordinates.alpha = 0.0
-                self.comment.alpha = 0.0
-                self.coordinates.isHidden = true
-                self.comment.isHidden = true
-                self.arrowButton.isSelected = false
-            } else {
-                self.coordinates.isHidden = false
-                self.comment.isHidden = false
-                self.coordinates.alpha = 1.0
-                self.comment.alpha = 1.0
-                self.arrowButton.isSelected = true
-            }
+            self.coordinatesContainer.isHidden = false
+            self.comment.isHidden = false
+            self.coordinatesContainer.alpha = 1.0
+            self.comment.alpha = 1.0
+            self.arrowButton.isSelected = true
             self.contentView.layoutIfNeeded()
+        }
+    }
+    
+    func collapseCell() {
+        UIView.animate(withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.01, options: .curveEaseIn) {
+            self.coordinatesContainer.isHidden = true
+            self.comment.isHidden = true
+            self.coordinatesContainer.alpha = 0.0
+            self.comment.alpha = 0.0
+            self.arrowButton.isSelected = false
+            self.contentView.layoutIfNeeded()
+        }
+    }
+    
+    func prepareToDisplay() {
+        if self.arrowButton.isSelected {
+            collapseCell()
         }
     }
     
     @objc func didTapArrow() {
         delegate?.locationCellArrowButtonTapped(cell: self)
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+    
+    @objc func didTapLocateButton() {
+        guard let location = location else { return }
+        delegate?.locationCellLocateButtonTapped(location: location)
     }
 
 }
