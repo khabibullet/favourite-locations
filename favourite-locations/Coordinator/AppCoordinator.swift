@@ -19,6 +19,7 @@ protocol CoordinatorProtocol: AnyObject {
     func showSingleLocation(location: Location)
 }
 
+
 class AppCoordinator: NSObject {
     let tabBarController: UITabBarController
     var locationsPresenter: LocationsPresenterProtocol!
