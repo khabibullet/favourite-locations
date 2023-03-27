@@ -49,6 +49,7 @@ extension AppCoordinator: CoordinatorProtocol {
         locationNavigationController.pushViewController(editor, animated: true)
     }
     
+
     func start() {
         let (locationsView, locationsPresenter) = ModuleBuilder.buildLocationsModule(coordinator: self)
         let (mapView, mapPresenter) = ModuleBuilder.buildMapModule(coordinator: self)
