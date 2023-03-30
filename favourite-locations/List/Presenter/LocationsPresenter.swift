@@ -94,7 +94,7 @@ extension LocationsPresenter: LocationsPresenterProtocol {
         searchQueue.cancelAllOperations()
         let searchOperation = BlockOperation()
         searchOperation.addExecutionBlock { [weak searchOperation] in
-            sleep(2) // Synthetic delay to test time-consuming operations handling
+            sleep(1) // Synthetic delay to test time-consuming operations handling
             self.searchPrefix = newKey.lowercased()
             guard let operation = searchOperation, !operation.isCancelled else { return }
             OperationQueue.main.addOperation {
