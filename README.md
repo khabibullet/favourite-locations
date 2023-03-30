@@ -1,16 +1,13 @@
 ## **Favourite locations**
 
-This project represents two ViewControllers linked via TabBarController. There is a MapView in the second ViewController and TableView in the first one.
+Managing and storing locations.
 
 <img src="readme/map.gif" alt="drawing" width="750" title="map"/>
 
-## **Instruments**
-
-UIKit, MapKit, CoreLocation.
-
 ## **Features**
-Switchable standard, satellite or hybrid mode.
-
-Different pin colors.
-
-User location tracking.
+- Switching map between standard, satellite or hybrid mode and location tracking.
+- Storing data with CoreData.
+- Custom input fields with focusing and alert labels.
+- Expandable collection view cells with swipe actions.
+- Asychronous filtering search jobs.
+- MVP-Coordinator design.
