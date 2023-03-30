@@ -2,7 +2,7 @@
 
 Managing and storing locations.
 
-<img src="readme/map.gif" alt="drawing" width="750" title="map"/>
+<img src="readme/map.gif" alt="drawing" width="300" title="map"/>
 
 ## **Features**
 - Switching map between standard, satellite or hybrid mode and location tracking.
