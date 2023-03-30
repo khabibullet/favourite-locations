@@ -92,9 +92,13 @@ class LocationsViewController: UIViewController {
         return stack
     }()
     
+    override func loadView() {
+        super.loadView()
+        view = locationsTable
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view = locationsTable
         
         locationsTable.delegate = self
         locationsTable.dataSource = self
